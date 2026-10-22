@@ -17,7 +17,7 @@ export function SiteHeader({
         <Link href="/register" className="btn inline-flex min-h-11 shrink-0 px-3 py-2 text-sm">
           Register
         </Link>
-        <MobileNav />
+        <MobileNav account={account} />
       </div>
 
       <div className="hidden border-b border-ivory/10 lg:block">
