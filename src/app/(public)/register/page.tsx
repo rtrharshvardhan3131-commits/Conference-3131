@@ -21,12 +21,18 @@ async function RegisterBody() {
   const site = await getCachedPublicSite()
   return (
     <>
-      <PageIntro
-        eyebrow={site.event.rotaractYear}
-        title="Register"
-        summary="A place is confirmed only after payment is verified on the server."
-      />
-      <div className="container-summit max-w-3xl py-8 md:py-16">
+      <section className="border-b border-ivory/10 bg-navy px-4 py-4 text-ivory lg:hidden">
+        <p className="text-xs tracking-[0.18em] text-gold uppercase">{site.event.rotaractYear}</p>
+        <h1 className="mt-1 font-serif text-3xl font-semibold">Register</h1>
+      </section>
+      <div className="hidden lg:block">
+        <PageIntro
+          eyebrow={site.event.rotaractYear}
+          title="Register"
+          summary="A place is confirmed only after payment is verified on the server."
+        />
+      </div>
+      <div className="container-summit min-w-0 max-w-3xl py-5 lg:py-16">
         <RegistrationWizard
           slabs={site.slabs}
           registrationOpen={site.event.registrationOpen}

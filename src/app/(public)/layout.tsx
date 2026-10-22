@@ -3,6 +3,7 @@ import Link from "next/link"
 import { AccountLink } from "@/components/public/account-link"
 import { RegisterBar } from "@/components/public/register-bar"
 import { SiteFooter } from "@/components/public/site-footer"
+import { RegisterFooterGate } from "@/components/public/register-footer-gate"
 import { SiteHeader } from "@/components/public/site-header"
 import { getCachedPublicSite } from "@/server/content"
 
@@ -29,11 +30,13 @@ export default async function PublicLayout({ children }: { children: React.React
           Database not connected. This website is showing the approved initial conference information. Registration and administration need Supabase.
         </p>
       ) : null}
-      <main id="content" className="flex-1 pb-24 lg:pb-0">
+      <main id="content" className="w-full min-w-0 max-w-full flex-1 pb-24 lg:pb-0">
         {children}
       </main>
       <RegisterBar />
-      <SiteFooter site={site} />
+      <RegisterFooterGate>
+        <SiteFooter site={site} />
+      </RegisterFooterGate>
     </div>
   )
 }

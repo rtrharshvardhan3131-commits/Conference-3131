@@ -27,24 +27,28 @@
 }
 
 html {
-  width: 100%;
-  min-width: 100%;
-  max-width: 100%;
-  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
 body {
-  width: 100%;
-  min-width: 100%;
-  max-width: 100%;
   margin: 0;
   background: var(--color-ivory);
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 1.05rem;
   line-height: 1.65;
-  overflow-x: clip;
+}
+
+/* A fieldset defaults to min-width: min-content, which pushes the registration
+   form wider than a phone and clips the right half. */
+fieldset {
+  min-width: 0;
+  max-width: 100%;
+}
+
+img,
+video {
+  max-width: 100%;
 }
 
 /* 16px type stops iOS from zooming on focus. 3rem keeps the tap target above 44px. */
@@ -53,6 +57,8 @@ select,
 textarea {
   font-size: 1rem;
   min-height: 3rem;
+  max-width: 100%;
+  min-width: 0;
   border-radius: var(--radius-control);
 }
 
@@ -89,6 +95,20 @@ input[type="radio"] {
   max-width: 1120px;
   margin-inline: auto;
   padding-inline: 1rem;
+}
+
+/* Mobile registration follows a single-page form: the action stays at the bottom of the screen. */
+@media (max-width: 63.99rem) {
+  .register-next {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding-bottom: calc(0.85rem + env(safe-area-inset-bottom));
+  }
 }
 
 .display {

@@ -9,7 +9,8 @@ export function DistrictLogo({ className, priority = false }: { className?: stri
       height={283}
       priority={priority}
       sizes="(max-width: 1024px) 176px, 240px"
-      className={className ?? "h-11 w-auto"}
+      className={className ?? "h-11 w-auto max-w-full"}
+      style={{ width: "auto", maxWidth: "100%" }}
     />
   )
 }

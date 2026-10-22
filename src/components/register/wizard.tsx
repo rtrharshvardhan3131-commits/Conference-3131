@@ -265,14 +265,21 @@ export function RegistrationWizard({
   const consentReady = consent.terms && consent.privacy && consent.refunds && consent.guidelines
 
   return (
-    <div className="grid gap-4">
+    <div className="grid min-w-0 max-w-full gap-6 pb-24 lg:gap-4 lg:pb-0">
       <div>
         <div className="flex gap-1.5" aria-hidden="true">
           {[1, 2, 3, 4].map((step) => (
             <span key={step} className={`h-1 flex-1 ${step <= active ? "bg-navy" : "bg-line"}`} />
           ))}
         </div>
-        <p className="mt-4 text-xs font-semibold tracking-[0.16em] text-gold uppercase">Step {active} of 4</p>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-slate">Step {active} of 4</p>
+          {active > 1 ? (
+            <button type="button" className="min-h-11 px-1 text-sm font-semibold text-navy underline lg:hidden" onClick={() => setActive(active - 1)}>
+              Back
+            </button>
+          ) : null}
+        </div>
         {active === 1 ? (
           <p className="mt-2 max-w-md text-base leading-relaxed text-ink">
             About 3 minutes. Have your Rotary ID, a government ID photo, a professional photograph, and your club name. You pay only after these details, then upload the screenshot.
@@ -297,7 +304,7 @@ export function RegistrationWizard({
       <StepSection id={1} title="Details" open={active === 1} summary={oneLine([details.fullName, details.club, details.districtZone])} onEdit={active === 1 ? undefined : () => setActive(1)}>
         {active === 1 ? (
           <form
-            className="grid gap-5"
+            className="grid gap-6"
             onSubmit={form.handleSubmit(() => {
               if (memberLookup) return
               const note = documentNote(governmentId)
@@ -328,7 +335,7 @@ export function RegistrationWizard({
                 <p className="text-sm text-ink" role="status">{memberNotice}</p>
               ) : null}
             </div>
-            <fieldset disabled={memberLookup} aria-busy={memberLookup || undefined} className="grid gap-5 border-0 p-0">
+            <fieldset disabled={memberLookup} aria-busy={memberLookup || undefined} className="grid min-w-0 max-w-full gap-5 border-0 p-0">
             <Input label="Full name" autoComplete="name" disabled={memberLookup} error={quietFieldError(form.formState.errors.fullName?.message, details.fullName)} {...form.register("fullName")} />
             <Input label="Email" type="email" autoComplete="email" inputMode="email" disabled={memberLookup} error={quietFieldError(form.formState.errors.email?.message, details.email)} {...form.register("email")} />
             {emailSuggestion ? (
@@ -419,7 +426,7 @@ export function RegistrationWizard({
                 setPhotographNote("")
               }}
             />
-            <button className="btn min-h-12 w-full text-base" disabled={memberLookup}>Continue</button>
+            <button className="register-next btn min-h-12 w-full text-base" disabled={memberLookup}>Next</button>
             </fieldset>
           </form>
         ) : null}
@@ -454,7 +461,7 @@ export function RegistrationWizard({
                 onClear={() => { setOffer(null); setCouponInput(""); setCouponNote("") }}
               />
               {selected ? <PriceBreakdown name={councilMember ? `First slab · ${selected.name}` : selected.name} pricePaise={selected.pricePaise} discountPaise={applied?.discountPaise ?? 0} payablePaise={payablePaise} council={Boolean(councilMember)} /> : null}
-              <button type="button" className="btn min-h-12 w-full text-base" disabled={!selected} onClick={() => { setDirty(true); if (selected) openNext(2) }}>Continue</button>
+              <button type="button" className="register-next btn min-h-12 w-full text-base" disabled={!selected} onClick={() => { setDirty(true); if (selected) openNext(2) }}>Next</button>
             </div>
           ) : null}
         </StepSection>
@@ -476,8 +483,8 @@ export function RegistrationWizard({
               <Check label="I accept the Privacy Policy." checked={consent.privacy} onChange={(privacy) => { setDirty(true); setConsent({ ...consent, privacy }) }} href="/privacy" />
               <Check label="I accept the Refund and Cancellation Policy." checked={consent.refunds} onChange={(refunds) => { setDirty(true); setConsent({ ...consent, refunds }) }} href="/refunds" />
               <Check label="I accept the event guidelines." checked={consent.guidelines} onChange={(guidelines) => { setDirty(true); setConsent({ ...consent, guidelines }) }} href="/guidelines" />
-              <button type="button" className="btn min-h-12 w-full text-base" disabled={!consentReady} onClick={() => openNext(3)}>
-                Continue to payment
+              <button type="button" className="register-next btn min-h-12 w-full text-base" disabled={!consentReady} onClick={() => openNext(3)}>
+                Next
               </button>
             </div>
           ) : null}
@@ -519,7 +526,7 @@ export function RegistrationWizard({
                 UTR or transaction reference, if you have one
                 <input value={manualReference} onChange={(event) => { setDirty(true); setManualReference(event.target.value) }} className="border border-line bg-ivory px-3 py-3 text-base" />
               </label>
-              <button type="button" disabled={pending} className="btn min-h-12 w-full text-base" onClick={() => pay()}>
+              <button type="button" disabled={pending} className="register-next btn min-h-12 w-full text-base" onClick={() => pay()}>
                 {pending ? "Submitting…" : "Submit for finance review"}
               </button>
             </div>
@@ -533,15 +540,15 @@ export function RegistrationWizard({
 
 function StepSection({ id, title, open, summary, onEdit, children }: { id: number; title: string; open: boolean; summary: string; onEdit?: () => void; children: React.ReactNode }) {
   return (
-    <section id={`register-step-${id}`} className="scroll-mt-28 border border-line bg-paper">
-      <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+    <section id={`register-step-${id}`} className={`scroll-mt-28 ${open ? "bg-transparent" : "hidden border border-line bg-paper lg:block"}`}>
+      <div className={`flex items-center justify-between gap-3 ${open ? "pb-1" : "border-b border-line px-4 py-3"}`}>
         {onEdit ? (
           <button type="button" className="min-h-11 flex-1 text-left" onClick={onEdit}>
             <span className="font-serif text-2xl text-navy">0{id} {title}</span>
             <span className="mt-1 block truncate text-sm text-slate">{summary}</span>
           </button>
         ) : (
-          <h2 className="font-serif text-2xl text-gold">0{id} {title}</h2>
+          <h2 className="font-serif text-3xl text-navy lg:text-2xl lg:text-gold">{title}</h2>
         )}
         {onEdit ? (
           <button type="button" className="min-h-11 shrink-0 px-3 text-sm underline decoration-gold" onClick={onEdit}>
@@ -549,7 +556,7 @@ function StepSection({ id, title, open, summary, onEdit, children }: { id: numbe
           </button>
         ) : null}
       </div>
-      {open ? <div className="p-4">{children}</div> : null}
+      {open ? <div className="pt-2 lg:p-4">{children}</div> : null}
     </section>
   )
 }
@@ -695,7 +702,7 @@ function FileField({ field, label, hint, file, error, imagesOnly = false, disabl
         accept={imagesOnly ? "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" : "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"}
         aria-invalid={error || localError ? true : undefined}
         disabled={disabled}
-        className={`w-full border bg-paper px-3 py-3 text-base file:mr-3 file:border-0 file:bg-navy file:px-3 file:py-2 file:text-sm file:text-ivory disabled:cursor-not-allowed disabled:bg-ivory ${error || localError ? "border-gold-deep" : "border-line"}`}
+        className={`w-full min-w-0 max-w-full border bg-paper px-3 py-3 text-base file:mr-3 file:border-0 file:bg-navy file:px-3 file:py-2 file:text-sm file:text-ivory disabled:cursor-not-allowed disabled:bg-ivory ${error || localError ? "border-gold-deep" : "border-line"}`}
         onChange={(event) => {
           const next = event.target.files?.[0] ?? null
           if (!next) {
