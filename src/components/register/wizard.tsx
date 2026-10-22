@@ -497,9 +497,9 @@ export function RegistrationWizard({
               <CopyRow label="Amount to transfer" value={formatInrFromPaise(payablePaise)} />
               <dl className="border border-line bg-ivory px-4">
                 {districtBankLines().map((line) => (
-                  <div key={line.label} className="flex items-center justify-between gap-4 border-b border-line py-3 last:border-b-0">
+                  <div key={line.label} className="grid min-w-0 gap-1 border-b border-line py-3 last:border-b-0">
                     <dt className="text-sm text-slate">{line.label}</dt>
-                    <dd className="flex items-center gap-3 text-right text-navy">{line.value || "Not published"}{line.value ? <CopyButton value={line.value} /> : null}</dd>
+                    <dd className="flex min-w-0 items-center justify-between gap-3 break-words text-navy">{line.value || "Not published"}{line.value ? <CopyButton value={line.value} /> : null}</dd>
                   </div>
                 ))}
               </dl>

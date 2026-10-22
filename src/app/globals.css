@@ -27,10 +27,18 @@
 }
 
 html {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
 body {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  margin: 0;
   background: var(--color-ivory);
   color: var(--color-ink);
   font-family: var(--font-sans);
@@ -76,8 +84,11 @@ input[type="radio"] {
 }
 
 .container-summit {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1120px;
   margin-inline: auto;
-  width: min(1120px, calc(100% - 2rem));
+  padding-inline: 1rem;
 }
 
 .display {

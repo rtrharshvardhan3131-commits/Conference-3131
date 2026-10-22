@@ -9,10 +9,10 @@ export function SiteHeader({
   account: React.ReactNode
 }) {
   return (
-    <header className="sticky top-0 z-50 bg-navy text-ivory">
-      <div className="relative flex items-center gap-2 border-b border-ivory/10 px-4 py-2 lg:hidden">
+    <header className="sticky top-0 z-50 w-full max-w-full bg-navy text-ivory">
+      <div className="relative flex w-full min-w-0 items-center gap-2 border-b border-ivory/10 px-4 py-2 lg:hidden">
         <Link href="/" className="min-w-0 flex-1" aria-label="Rotaract District 3131">
-          <DistrictLogo priority className="h-10 w-auto max-w-[11rem]" />
+          <DistrictLogo priority className="h-10 w-auto max-w-full" />
         </Link>
         <Link href="/register" className="btn inline-flex min-h-11 shrink-0 px-3 py-2 text-sm">
           Register

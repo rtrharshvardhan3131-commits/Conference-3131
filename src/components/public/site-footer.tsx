@@ -17,8 +17,8 @@ const links = [
 
 export function SiteFooter({ site }: { site: PublicSite }) {
   return (
-    <footer className="mt-0 border-t border-gold/30 bg-navy text-ivory">
-      <div className="container-summit grid gap-10 py-12 md:grid-cols-3">
+    <footer className="mt-0 w-full max-w-full border-t border-gold/30 bg-navy text-ivory">
+      <div className="container-summit grid min-w-0 gap-8 py-10 md:grid-cols-3 md:gap-10 md:py-12">
         <div>
           <DistrictLogo className="h-14 w-auto" />
           <p className="mt-4 font-serif text-2xl font-semibold">{site.event.name}</p>
@@ -28,10 +28,10 @@ export function SiteFooter({ site }: { site: PublicSite }) {
         </div>
         <div>
           <p className="text-sm font-semibold">Visit</p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-3 grid min-w-0 gap-2 md:grid-cols-2">
             {links.map(([label, href]) => (
-              <li key={href}>
-                <Link href={href} className="text-sm text-ivory/75 hover:text-gold">
+              <li key={href} className="min-w-0">
+                <Link href={href} className="block break-words text-sm text-ivory/75 hover:text-gold">
                   {label}
                 </Link>
               </li>

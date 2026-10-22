@@ -9,7 +9,7 @@ import { getCachedPublicSite } from "@/server/content"
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const site = await getCachedPublicSite()
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-full w-full min-w-0 max-w-full flex-col">
       <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ivory focus:px-4 focus:py-2">
         Skip to content
       </a>
