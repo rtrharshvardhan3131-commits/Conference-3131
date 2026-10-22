@@ -1,0 +1,47 @@
+export const COUNCIL_POSITIONS = [
+  "District Rotaract Representative",
+  "District Learning Facilitator",
+  "District General Secretary",
+  "District Secretary - Administration",
+  "District Secretary - Events",
+  "District Secretary - Protocols",
+  "District Secretary - Reporting",
+  "District Treasurer",
+  "District Club Advisor",
+  "Zonal Advisor",
+  "District Zonal Representative",
+  "Assistant Zonal Representative",
+  "District Director - Professional Development",
+  "District Director - Club Service",
+  "District Director - Community Service",
+  "District Co-Director - Community Service",
+  "District Director - International Service",
+  "District Co-Director - International Service",
+  "District Director - Diversity, Equity & Inclusion",
+  "District Director - Communications",
+  "District Director - Public Image",
+  "District Officer - Chief Branding",
+  "District Officer - Public Relations",
+  "District Officer - Editing",
+  "District Sergeant-at-Arms",
+  "District Officer - Grants & RYLA",
+  "District Officer - Rotary Rotaract Relations",
+  "District Officer - Membership Devlopment & Interact Rotaract Relations",
+  "District Officer - Professional Assistance",
+  "District Legal Advisor",
+  "District Coordinator - Website",
+  "District Coordinator - Multi District Events",
+  "District Coordinator - Mahadaan",
+  "District Chairperson - World Rotaract Week",
+  "District Officer - Without Portfolio",
+  "District Convenor - District Sports Meet",
+  "District Convenor - DRR and Council Installation",
+  "District Convenor - District Trek",
+  "District Convenor - District Culturals",
+] as const
+
+const councilPositions = new Set<string>(COUNCIL_POSITIONS)
+
+export function isCouncilPosition(value: string): boolean {
+  return councilPositions.has(value)
+}

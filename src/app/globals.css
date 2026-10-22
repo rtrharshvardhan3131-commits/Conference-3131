@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0c1424;
+  --color-ink: #172033;
+  --color-magenta: #c6a36b;
+  --color-magenta-deep: #a4844e;
+  --color-gold: #c6a36b;
+  --color-gold-deep: #a4844e;
+  /* Logo cranberry. White text is 5.07:1 on #d22163 and 7.41:1 on the hover shade. */
+  --color-cranberry: #d22163;
+  --color-cranberry-deep: #a41a4d;
+  --color-cranberry-soft: #f8e7ee;
+  --color-ivory: #f6f1e7;
+  --color-wash: #f6f1e7;
+  --color-paper: #fffdf8;
+  --color-slate: #5c6578;
+  --color-line: #e4dccb;
+  --font-serif: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-body), "Segoe UI", sans-serif;
+  /* Existing panels are square. Tokens exist so later screens can share one radius. */
+  --radius-control: 0px;
+  --radius-card: 0px;
+  --radius-pill: 999px;
+  /* 44px minimum tap target. */
+  --spacing-tap: 2.75rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  overflow-x: clip;
+}
+
+/* 16px type stops iOS from zooming on focus. 3rem keeps the tap target above 44px. */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  font-size: 1rem;
+  min-height: 3rem;
+  border-radius: var(--radius-control);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-height: 1.25rem;
+  accent-color: var(--color-navy);
+  flex: none;
+}
+
+.menu-summary {
+  list-style: none;
+}
+
+.menu-summary::-webkit-details-marker {
+  display: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cranberry);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: #c7a76c;
+  color: #101a2c;
+}
+
+.container-summit {
+  margin-inline: auto;
+  width: min(1120px, calc(100% - 2rem));
+}
+
+.display {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.eyebrow {
+  color: var(--color-gold);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.1rem, 4vw, 3.2rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.panel {
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--spacing-tap);
+    background: var(--color-gold);
+    color: var(--color-navy);
+    padding: 0.75rem 1.2rem;
+    font-weight: 600;
+  }
+
+  .btn:hover {
+    background: var(--color-gold-deep);
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    background: var(--color-line);
+    color: var(--color-slate);
+    box-shadow: none;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--spacing-tap);
+    border: 1px solid var(--color-ink);
+    background: transparent;
+    padding: 0.7rem 1.25rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--color-magenta);
+    color: var(--color-magenta);
+  }
+}
+
+.prose-summit p + p {
+  margin-top: 1.1rem;
+}
+
+.reign-stage {
+  display: grid;
+  width: min(42vw, 168px);
+  place-items: center;
+}
+
+.reign-logo {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(28vh, 220px);
+  transform-origin: center;
+  animation: reign-float 5.6s ease-in-out infinite;
+}
+
+@keyframes reign-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    filter: drop-shadow(0 8px 8px rgb(0 0 0 / 0.32));
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+    filter: drop-shadow(0 20px 14px rgb(0 0 0 / 0.16));
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 0.9s ease both;
+}
+
+.scroll-cue {
+  animation: cue 1.8s ease-in-out infinite;
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cue {
+  50% { transform: translateY(6px); }
+}
+
+@media (min-width: 64rem) {
+  .hero-mark .reign-stage { width: min(26vw, 240px); }
+  .hero-mark .reign-logo { max-height: min(52vh, 420px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
