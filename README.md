@@ -1,6 +1,6 @@
 # The SOVEREIGN Summit
 
-Official website and conference platform for **The SOVEREIGN Summit**, the district conference of Rotaract District 3131 for RIY 2026–27, hosted by the Rotaract Club of Bavdhan Pioneers on 13–14 February 2027.
+Official website and conference platform for **The SOVEREIGN Summit**, the district conference of Rotaract District 3131 for RIY 2026–27, on 13–14 February 2027. The host club has not been announced.
 
 The public site, registration, payments, delegate portal, and administration share one Next.js application and one Supabase database.
 

@@ -15,7 +15,7 @@ export default async function ContactPage() {
         <div className="flex h-full flex-col justify-between border border-line bg-paper px-6 py-8">
           <div>
             <p className="text-xs tracking-[0.16em] text-gold uppercase">Host club</p>
-            <p className="mt-2 font-serif text-3xl text-navy">{site.event.hostClub}</p>
+            <p className="mt-2 font-serif text-3xl text-navy">Announcement coming soon.</p>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
             {site.event.publicEmail ? (

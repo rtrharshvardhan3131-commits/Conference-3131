@@ -24,7 +24,7 @@ export function SiteFooter({ site }: { site: PublicSite }) {
           <p className="mt-4 font-serif text-2xl font-semibold">{site.event.name}</p>
           <p className="mt-2 text-sm font-semibold text-gold">{site.event.districtName}</p>
           <p className="mt-3 text-sm text-ivory/75">{site.event.subtitle}</p>
-          <p className="mt-3 text-sm text-ivory/75">Hosted by {site.event.hostClub}.</p>
+          <p className="mt-3 text-sm text-ivory/75">Host club announcement coming soon.</p>
         </div>
         <div>
           <p className="text-sm font-semibold">Visit</p>

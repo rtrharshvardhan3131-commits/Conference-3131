@@ -1,6 +1,6 @@
 # The SOVEREIGN Summit — project overview
 
-The SOVEREIGN Summit is the district conference of Rotaract District 3131 for Rotary year 2026–27. It is hosted by the Rotaract Club of Bavdhan Pioneers on 13–14 February 2027, as two days and one night. The tagline is “Two Days. One Summit. A District United.”
+The SOVEREIGN Summit is the district conference of Rotaract District 3131 for Rotary year 2026–27. It is held on 13–14 February 2027, as two days and one night. The host club has not been announced. The tagline is “Two Days. One Summit. A District United.”
 
 This repository is the public website and the working registration platform. Delegates are expected to register from a phone, so the public pages are designed for a narrow screen first. The same application also holds the delegate record, finance review, and the committee desk.
 
