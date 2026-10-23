@@ -1,4 +1,5 @@
 import "server-only"
+import { cache } from "react"
 import { redirect } from "next/navigation"
 import { hasPermission, isStaff } from "@/domain/permissions"
 import type { AppRole, Permission } from "@/domain/types"
@@ -20,7 +21,7 @@ const roleSet = new Set<AppRole>([
   "delegate",
 ])
 
-export async function getActor(): Promise<Actor | null> {
+export const getActor = cache(async function getActor(): Promise<Actor | null> {
   if (!isSupabaseConfigured()) return null
   const supabase = await createServerSupabase()
   const { data, error } = await supabase.auth.getClaims()
@@ -31,7 +32,7 @@ export async function getActor(): Promise<Actor | null> {
     .map((row) => row.role)
     .filter((role): role is AppRole => roleSet.has(role as AppRole))
   return { id: data.claims.sub, email, roles }
-}
+})
 
 export async function requireActor(): Promise<Actor> {
   const actor = await getActor()

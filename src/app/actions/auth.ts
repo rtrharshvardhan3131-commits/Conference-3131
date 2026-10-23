@@ -35,14 +35,20 @@ export async function signIn(_previous: { message: string }, formData: FormData)
   redirect(actor && isStaff(actor.roles) ? "/admin" : "/delegate")
 }
 
-export async function sendMagicLink(formData: FormData) {
-  if (!isSupabaseConfigured()) return
-  const email = String(formData.get("email") ?? "")
-  const supabase = await createServerSupabase()
-  await supabase.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback` },
-  })
+export async function sendMagicLink(_previous: { message: string }, formData: FormData) {
+  if (!isSupabaseConfigured()) return { message: "Sign-in is not connected yet." }
+  try {
+    const email = String(formData.get("email") ?? "").trim()
+    if (!email.includes("@")) return { message: "Enter the email address for the link." }
+    const supabase = await createServerSupabase()
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback` },
+    })
+    if (error) return { message: "The sign-in link could not be sent. Check the email and try again." }
+  } catch {
+    return { message: "The sign-in link could not be sent." }
+  }
   redirect("/login?sent=1")
 }
 

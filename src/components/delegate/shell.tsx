@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "@/app/actions/auth"
 import { DistrictLogo } from "@/components/public/district-logo"
+import { MobileSheet } from "@/components/ui/mobile-sheet"
 
 const links = [
   { href: "/delegate", label: "Overview" },
@@ -21,7 +22,7 @@ function isCurrent(path: string, href: string) {
   return path === target || path.startsWith(`${target}/`)
 }
 
-export function DelegateShell({ email, children }: { email: string; children: React.ReactNode }) {
+export function DelegateShell({ emailSlot, children }: { emailSlot?: React.ReactNode; children: React.ReactNode }) {
   const path = usePathname()
 
   const nav = (
@@ -50,7 +51,7 @@ export function DelegateShell({ email, children }: { email: string; children: Re
             <DistrictLogo className="h-12 w-auto" />
           </Link>
           <p className="mt-3 font-serif text-xl">Delegate portal</p>
-          <p className="mt-2 break-all text-xs text-ivory/60">{email}</p>
+          <div className="mt-2">{emailSlot}</div>
         </div>
         <div className="flex-1 overflow-y-auto py-4">{nav}</div>
         <div className="grid gap-3 border-t border-ivory/10 px-5 py-5 text-sm">
@@ -62,22 +63,23 @@ export function DelegateShell({ email, children }: { email: string; children: Re
       </aside>
 
       <div className="min-w-0">
-        <details className="group sticky top-0 z-30 border-b border-ivory/10 bg-navy text-ivory lg:hidden">
-          <summary className="menu-summary flex min-h-12 cursor-pointer items-center justify-between px-4 py-3">
-            <DistrictLogo className="h-9 w-auto" />
-            <span className="border border-ivory/40 px-3 py-2 text-sm">
-              <span className="group-open:hidden">Menu</span>
-              <span className="hidden group-open:inline">Close</span>
-            </span>
-          </summary>
-          <div className="border-t border-ivory/10 px-2 py-3">
-            {nav}
-            <div className="mt-3 grid gap-3 border-t border-ivory/10 px-4 pt-3 text-base">
-              <Link href="/" className="text-ivory/75">Public website</Link>
-              <form action={signOut}><button className="min-h-11 text-left text-ivory/75">Sign out {email}</button></form>
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 bg-navy px-4 py-3 text-ivory lg:hidden">
+          <Link href="/delegate" className="min-w-0" aria-label="Rotaract District 3131">
+            <DistrictLogo className="h-9 w-auto max-w-full" />
+          </Link>
+          <MobileSheet label="Menu">
+            <div className="px-2 py-3">
+              {nav}
+              <div className="mt-3 grid gap-3 border-t border-ivory/10 px-4 pt-3 text-base">
+                {emailSlot}
+                <Link href="/" className="min-h-11 text-ivory/75">Public website</Link>
+                <form action={signOut}>
+                  <button className="min-h-11 text-left text-ivory/75">Sign out</button>
+                </form>
+              </div>
             </div>
-          </div>
-        </details>
+          </MobileSheet>
+        </header>
         <div className="px-5 py-8 md:px-10 md:py-10">{children}</div>
       </div>
     </div>

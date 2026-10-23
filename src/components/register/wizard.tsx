@@ -62,6 +62,8 @@ export function RegistrationWizard({
   const [memberToast, setMemberToast] = useState("")
   const [memberLookup, setMemberLookup] = useState(false)
   const submitLock = useRef(false)
+  const historySteps = useRef<number[]>([1])
+  const leaving = useRef(false)
   const router = useRouter()
   const form = useForm<Details>({
     resolver: zodResolver(registrationDetailsSchema),
@@ -102,6 +104,10 @@ export function RegistrationWizard({
         if (result.status === "many") {
           setMemberToast("This Rotary ID matches more than one member. Check that it is yours, then fill in your details.")
         }
+      }).catch(() => {
+        if (lookupSerial.current !== serial) return
+        setMemberLookup(false)
+        setMemberToast("The district list could not be checked. You can still fill in your details.")
       })
     }, 600)
     return () => window.clearTimeout(timer)
@@ -136,16 +142,59 @@ export function RegistrationWizard({
   useEffect(() => {
     if (form.formState.isDirty) setDirty(true)
   }, [form.formState.isDirty])
-  function openNext(from: number) {
-    const next = Math.min(from + 1, 4)
+  useEffect(() => {
+    function onPop(event: PopStateEvent) {
+      if (leaving.current || historySteps.current.length <= 1) return
+      const step = event.state?.registerStep
+      const current = historySteps.current.at(-1)
+      if (typeof step === "number" && step === current) return
+      if (typeof step === "number") {
+        const index = historySteps.current.lastIndexOf(step)
+        if (index === -1) return
+        historySteps.current = historySteps.current.slice(0, index + 1)
+        setActive(step)
+        return
+      }
+      historySteps.current = [1]
+      setActive(1)
+    }
+    window.addEventListener("popstate", onPop)
+    return () => window.removeEventListener("popstate", onPop)
+  }, [])
+  function pushStep(next: number) {
     setReached((current) => Math.max(current, next))
     setActive(next)
+    if (historySteps.current.at(-1) === next) return
+    window.history.pushState({ registerStep: next }, "")
+    historySteps.current.push(next)
+  }
+  function openNext(from: number) {
+    pushStep(Math.min(from + 1, 4))
+  }
+  function retreat() {
+    if (historySteps.current.length > 1) {
+      window.history.back()
+      return
+    }
+    setActive((current) => Math.max(1, current - 1))
+  }
+  function editStep(to: number) {
+    const index = historySteps.current.lastIndexOf(to)
+    if (index === -1) {
+      setActive(to)
+      return
+    }
+    const delta = historySteps.current.length - 1 - index
+    if (delta <= 0) {
+      setActive(to)
+      return
+    }
+    window.history.go(-delta)
   }
   function continueFromDetails() {
     if (councilMember && firstSlab) {
       setSlabId(firstSlab.id)
-      setReached((current) => Math.max(current, 3))
-      setActive(3)
+      pushStep(3)
       return
     }
     openNext(1)
@@ -164,7 +213,15 @@ export function RegistrationWizard({
     if (!selected) return
     setCouponNote("")
     setCouponPending(true)
-    const result = await previewCoupon({ code: couponInput, slabId: selected.id, councilMember: Boolean(councilMember) })
+    let result: Awaited<ReturnType<typeof previewCoupon>>
+    try {
+      result = await previewCoupon({ code: couponInput, slabId: selected.id, councilMember: Boolean(councilMember) })
+    } catch {
+      setCouponPending(false)
+      setOffer(null)
+      setCouponNote("The offer could not be checked. Try the code again.")
+      return
+    }
     setCouponPending(false)
     if (!result.ok) {
       setOffer(null)
@@ -232,6 +289,18 @@ export function RegistrationWizard({
         return
       }
       try { localStorage.removeItem(DRAFT_KEY) } catch { /* The draft can stay if storage is blocked. */ }
+      const extra = historySteps.current.length - 1
+      leaving.current = true
+      if (extra > 0) {
+        await new Promise<void>((resolve) => {
+          function done() {
+            window.removeEventListener("popstate", done)
+            resolve()
+          }
+          window.addEventListener("popstate", done)
+          window.history.go(-extra)
+        })
+      }
       router.push("/register/confirmation")
     } catch {
       submitLock.current = false
@@ -275,7 +344,7 @@ export function RegistrationWizard({
         <div className="mt-4 flex items-center justify-between gap-3">
           <p className="text-sm font-semibold text-slate">Step {active} of 4</p>
           {active > 1 ? (
-            <button type="button" className="min-h-11 px-1 text-sm font-semibold text-navy underline lg:hidden" onClick={() => setActive(active - 1)}>
+            <button type="button" className="min-h-11 px-1 text-sm font-semibold text-navy underline lg:hidden" onClick={retreat}>
               Back
             </button>
           ) : null}
@@ -301,7 +370,7 @@ export function RegistrationWizard({
           <button type="button" className="mt-3 min-h-11 underline" onClick={() => void pay()}>Retry</button>
         </div>
       ) : null}
-      <StepSection id={1} title="Details" open={active === 1} summary={oneLine([details.fullName, details.club, details.districtZone])} onEdit={active === 1 ? undefined : () => setActive(1)}>
+      <StepSection id={1} title="Details" open={active === 1} summary={oneLine([details.fullName, details.club, details.districtZone])} onEdit={active === 1 ? undefined : () => editStep(1)}>
         {active === 1 ? (
           <form
             className="grid gap-6"
@@ -432,7 +501,7 @@ export function RegistrationWizard({
         ) : null}
       </StepSection>
       {reached >= 2 ? (
-        <StepSection id={2} title="Slab" open={active === 2} summary={selected ? (councilMember ? `First slab · ${selected.name}` : `${selected.name} · ${formatInrFromPaise(payablePaise)}`) : "Select a slab."} onEdit={active === 2 || councilMember ? undefined : () => setActive(2)}>
+        <StepSection id={2} title="Slab" open={active === 2} summary={selected ? (councilMember ? `First slab · ${selected.name}` : `${selected.name} · ${formatInrFromPaise(payablePaise)}`) : "Select a slab."} onEdit={active === 2 || councilMember ? undefined : () => editStep(2)}>
           {active === 2 ? (
             <div className="grid gap-4">
               {councilMember && firstSlab ? (
@@ -467,7 +536,7 @@ export function RegistrationWizard({
         </StepSection>
       ) : null}
       {reached >= 3 && selected ? (
-        <StepSection id={3} title="Consent" open={active === 3} summary={consentReady ? "Policies accepted." : "Policies still need to be accepted."} onEdit={active === 3 ? undefined : () => setActive(3)}>
+        <StepSection id={3} title="Consent" open={active === 3} summary={consentReady ? "Policies accepted." : "Policies still need to be accepted."} onEdit={active === 3 ? undefined : () => editStep(3)}>
           {active === 3 ? (
             <div className="grid gap-4">
               <div className="border border-line bg-ivory p-4">
@@ -491,7 +560,7 @@ export function RegistrationWizard({
         </StepSection>
       ) : null}
       {reached >= 4 && selected ? (
-        <StepSection id={4} title="Payment" open={active === 4} summary={paymentProof ? `${formatInrFromPaise(payablePaise)} · screenshot added` : `${formatInrFromPaise(payablePaise)} · screenshot not added yet`} onEdit={active === 4 ? undefined : () => setActive(4)}>
+        <StepSection id={4} title="Payment" open={active === 4} summary={paymentProof ? `${formatInrFromPaise(payablePaise)} · screenshot added` : `${formatInrFromPaise(payablePaise)} · screenshot not added yet`} onEdit={active === 4 ? undefined : () => editStep(4)}>
           {active === 4 ? (
             <div className="grid gap-4">
               <ol className="grid gap-2 text-sm text-ink">

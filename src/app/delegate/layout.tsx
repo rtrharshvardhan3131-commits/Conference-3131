@@ -1,18 +1,27 @@
 import { Suspense } from "react"
 import { DelegateShell } from "@/components/delegate/shell"
+import { PageSkeleton } from "@/components/ui/page-skeleton"
 import { requireActor } from "@/server/session"
 
 export const instant = false
 
-async function DelegateFrame({ children }: { children: React.ReactNode }) {
+async function DelegateEmail() {
   const actor = await requireActor()
-  return <DelegateShell email={actor.email}>{children}</DelegateShell>
+  return <p className="break-all text-xs text-ivory/60">{actor.email}</p>
 }
 
 export default function DelegateLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<p className="p-8">Loading your portal…</p>}>
-      <DelegateFrame>{children}</DelegateFrame>
-    </Suspense>
+    <DelegateShell
+      emailSlot={
+        <Suspense fallback={null}>
+          <DelegateEmail />
+        </Suspense>
+      }
+    >
+      <Suspense fallback={<PageSkeleton label="Opening your portal" />}>
+        {children}
+      </Suspense>
+    </DelegateShell>
   )
 }

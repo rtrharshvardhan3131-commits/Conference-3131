@@ -1,12 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { DistrictLogo } from "@/components/public/district-logo"
+import { PageSkeleton } from "@/components/ui/page-skeleton"
 
 export default function Loading() {
   return (
-    <main className="container-summit grid gap-4 py-16" aria-busy="true" aria-live="polite">
-      <p className="text-base text-ink">Loading the Summit…</p>
-      <Skeleton className="h-8 w-2/3" />
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-24 w-full" />
-    </main>
+    <div className="min-h-full bg-ivory">
+      <header className="bg-navy px-4 py-3 text-ivory">
+        <DistrictLogo className="h-9 w-auto" />
+      </header>
+      <main className="container-summit py-10">
+        <PageSkeleton label="The SOVEREIGN Summit" />
+      </main>
+    </div>
   )
 }

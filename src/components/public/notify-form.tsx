@@ -20,7 +20,7 @@ export function NotifyForm({ topic, targetNote }: { topic: "speakers" | "sponsor
         {pending ? "Saving…" : "Notify me"}
       </button>
       {state.message ? (
-        <p role="status" aria-live="polite" className="text-sm text-ink">
+        <p role={state.ok ? "status" : "alert"} aria-live="polite" className={state.ok ? "text-sm text-ink" : "border border-red-800/30 bg-red-50 px-3 py-3 text-sm text-red-900"}>
           {state.message}
         </p>
       ) : null}

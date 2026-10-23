@@ -1,11 +1,9 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { PageSkeleton } from "@/components/ui/page-skeleton"
 
 export default function Loading() {
   return (
-    <div className="container-summit grid gap-4 py-16" aria-busy="true" aria-live="polite">
-      <p className="text-base text-ink">Loading the Summit…</p>
-      <Skeleton className="h-10 w-1/2" />
-      <Skeleton className="h-40 w-full" />
+    <div className="container-summit py-10">
+      <PageSkeleton label="The SOVEREIGN Summit" />
     </div>
   )
 }

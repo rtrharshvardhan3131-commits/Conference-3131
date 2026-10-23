@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react"
 import { createPortal } from "react-dom"
 import { primaryNav } from "@/components/public/nav"
@@ -23,7 +23,6 @@ function pathOf(href: string) {
 
 export function MobileNav({ account }: { account: ReactNode }) {
   const pathname = usePathname()
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const panelId = useId()
@@ -122,19 +121,23 @@ export function MobileNav({ account }: { account: ReactNode }) {
       }, 700)
       return
     }
-    event.preventDefault()
-    event.stopPropagation()
-    if (pathOf(href) === pathname) {
+    if (pathOf(href) === pathname && !href.includes("#")) {
+      event.preventDefault()
+      event.stopPropagation()
       closeMenu(false)
       return
     }
+    document.body.style.position = ""
+    document.body.style.top = ""
+    document.body.style.left = ""
+    document.body.style.right = ""
+    document.body.style.width = ""
     menuEntry.current = false
     ignoreOpen.current = true
     setOpen(false)
     window.setTimeout(() => {
       ignoreOpen.current = false
     }, 700)
-    router.replace(href)
   }
 
   function itemClass(href: string) {
