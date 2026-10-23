@@ -61,7 +61,7 @@ export default async function DelegateHome() {
       <p className="text-xs tracking-[0.18em] text-gold uppercase">Your summit</p>
       <h1 className="mt-2 font-serif text-4xl text-navy md:text-5xl">{name}</h1>
       <p className="mt-3 max-w-2xl text-slate">{site.event.name} · {site.event.durationLabel}. Use the menu for your registration, itinerary, room, and payment.</p>
-      <div className="mt-6 border border-line bg-paper p-5" role="status">
+      <div className="mt-6 border border-line border-l-4 border-l-cranberry bg-paper p-5" role="status">
         <p className="text-xs tracking-[0.16em] text-gold uppercase">Status</p>
         <p className="mt-2 font-serif text-3xl text-navy">{!registration ? "No registration yet" : stage === "confirmed" ? "Confirmed" : stage === "closed" ? "Closed" : "Payment under review"}</p>
         <p className="mt-2 text-sm text-slate">{stage === "confirmed" ? "Finance has confirmed this registration." : "Payment is not confirmed until finance records it. A screenshot does not confirm the place."}</p>

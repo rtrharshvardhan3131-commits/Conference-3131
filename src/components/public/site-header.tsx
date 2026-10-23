@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { DistrictLogo } from "@/components/public/district-logo"
 import { MobileNav } from "@/components/public/mobile-nav"
-import { primaryNav } from "@/components/public/nav"
+import { PrimaryLinks } from "@/components/public/primary-links"
 
 export function SiteHeader({
   account,
@@ -25,15 +25,8 @@ export function SiteHeader({
           <Link href="/" className="shrink-0" aria-label="Rotaract District 3131">
             <DistrictLogo priority className="h-12 w-auto" />
           </Link>
-          <nav className="flex items-center gap-5 text-sm text-ivory/85" aria-label="Primary">
-            {primaryNav.map((item) => (
-              <Link key={item.href} href={item.href} className="hover:text-gold">
-                {item.label}
-              </Link>
-            ))}
-            <Link href="/register/status" className="hover:text-gold">
-              My registration
-            </Link>
+          <nav className="flex items-center gap-5 text-sm" aria-label="Primary">
+            <PrimaryLinks />
             <span className="text-ivory">{account}</span>
             <Link href="/register" className="btn inline-flex min-h-11 px-4 py-2 text-sm">
               Register Now

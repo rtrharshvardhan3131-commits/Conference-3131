@@ -33,7 +33,7 @@ export default async function SlabsPage() {
         <input name="quantity_limit" type="number" min="0" placeholder="Quantity limit, optional" className="border border-line px-3 py-3" />
         <input name="sort_order" type="number" defaultValue={1} className="border border-line px-3 py-3" />
         <select name="status" className="border border-line px-3 py-3"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save slab</button>
+        <button className="btn">Save slab</button>
       </form>
     </section>
   )

@@ -4,7 +4,7 @@ import { connection } from "next/server"
 import { ActiveSlab } from "@/components/public/active-slab"
 import { LiveCountdown } from "@/components/public/countdown"
 import { NotifyForm } from "@/components/public/notify-form"
-import { SummitMark } from "@/components/public/summit-mark"
+import { SummitGateway } from "@/components/public/summit-gateway"
 import { Badge } from "@/components/ui/badge"
 import { showPriceOnHome, showSocialProof, whatsAppShareUrl } from "@/domain/experience"
 import type { PublicSlab } from "@/domain/public-site"
@@ -36,58 +36,49 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#07080d] text-ivory">
-        <div className="container-summit relative z-10 flex min-h-[calc(100svh-4.5rem)] flex-1 flex-col justify-between gap-8 py-6 pb-16 lg:grid lg:min-h-[calc(100svh-5.5rem)] lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-8 lg:py-16">
-          <div className="hero-mark order-1 flex justify-center lg:order-2 lg:justify-end">
-            <SummitMark />
-          </div>
-          <div className="order-2 lg:order-1">
-            <p className="hero-rise text-xs tracking-[0.28em] text-gold uppercase">{site.event.subtitle}</p>
-            <div className="hero-rise mt-4 max-w-md">
+      <section className="cinematic-hero relative bg-[#070b14] text-ivory">
+        <div id="gateway" className="hero-balance container-summit relative z-10 py-8 lg:py-10">
+          <div className="hero-copy">
+          <p className="hero-kicker hero-rise text-[0.68rem] font-semibold tracking-[0.32em] text-gold uppercase">{site.event.subtitle}</p>
+          <h1 className="hero-title display hero-rise mt-3 text-[clamp(4.2rem,7.2vw,8rem)] leading-[0.86] text-ivory">
+            The
+            <span className="block">Sovereign</span>
+            <span className="block">Summit</span>
+          </h1>
+          <div className="hero-meta mt-6">
+            <p className="hero-rise max-w-xl text-lg text-ivory/80 md:text-2xl" style={{ animationDelay: "120ms" }}>{site.event.tagline}</p>
+            <p className="hero-rise mt-3 font-serif text-xl text-gold md:text-2xl" style={{ animationDelay: "180ms" }}>{formatEventRange(site.event.startDate, site.event.endDate)}</p>
+            <p className="hero-rise mt-2 max-w-lg text-xs tracking-[0.16em] text-ivory/55 uppercase" style={{ animationDelay: "220ms" }}>{venueLine}</p>
+            <div className="hero-rise mt-6 max-w-xl" style={{ animationDelay: "260ms" }}>
               <Suspense fallback={<CountdownFallback />}>
-                <LiveCountdown slabs={site.slabs} startDate={site.event.startDate} endDate={site.event.endDate} timeZone={site.event.timezone} onDark />
+                <LiveCountdown startDate={site.event.startDate} endDate={site.event.endDate} timeZone={site.event.timezone} tone="rail" />
               </Suspense>
             </div>
-            <h1 className="display hero-rise mt-4 max-w-3xl text-[clamp(2.7rem,12vw,6.6rem)] lg:mt-5" style={{ animationDelay: "80ms" }}>
-              The Sovereign Summit
-            </h1>
-            <p className="hero-rise mt-6 max-w-lg text-lg text-ivory/85 md:text-xl" style={{ animationDelay: "160ms" }}>
-              {site.event.tagline}
-            </p>
-            <p className="hero-rise mt-4 font-serif text-2xl text-gold" style={{ animationDelay: "220ms" }}>
-              {formatEventRange(site.event.startDate, site.event.endDate)}
-            </p>
-            <p className="hero-rise mt-2 text-sm tracking-[0.14em] text-ivory/70 uppercase" style={{ animationDelay: "260ms" }}>
-              {venueLine}
-            </p>
-            <div className="hero-rise mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "320ms" }}>
-              <Link href="/register" className="btn inline-flex min-h-11 justify-center px-6 py-3">Register now</Link>
-              <Link href="/agenda" className="inline-flex min-h-11 items-center justify-center border border-ivory/50 px-6 py-3 font-semibold text-ivory hover:border-gold hover:text-gold">
-                View agenda
-              </Link>
+            <div className="hero-rise mt-6 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "320ms" }}>
+              <Link href="/register" className="inline-flex min-h-14 items-center justify-center bg-cranberry px-8 text-base font-semibold tracking-wide text-ivory hover:bg-cranberry-deep">Register now</Link>
+              <Link href="/agenda" className="inline-flex min-h-14 items-center justify-center border border-ivory/40 px-8 text-base font-semibold text-ivory hover:border-gold hover:text-gold">View agenda</Link>
             </div>
-            <a href={shareHref} className="hero-rise mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-gold" style={{ animationDelay: "360ms" }}>
-              Share with your club
-            </a>
+            <a href={shareHref} className="hero-rise mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-gold" style={{ animationDelay: "360ms" }}>Share with your club</a>
+          </div>
+          </div>
+          <div className="hero-mark-col">
+            <SummitGateway />
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24 bg-gradient-to-b from-transparent to-[#10192b]" />
-        <a href="#summit-story" className="scroll-cue absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-[0.68rem] tracking-[0.22em] text-ivory/70 uppercase">
-          Scroll
-        </a>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-b from-transparent to-[#0c1424]" />
       </section>
 
-      <section className="border-y border-ivory/10 bg-[#10192b] text-ivory">
-        <dl className="container-summit grid grid-cols-2 gap-px bg-ivory/15">
+      <section className="bg-[#0c1424] text-ivory">
+        <dl className="container-summit grid grid-cols-2 lg:grid-cols-4">
             {[
               ["Dates", formatEventRange(site.event.startDate, site.event.endDate)],
               ["Format", site.event.durationLabel],
               ["Organiser", site.event.districtName],
               ["Venue", venueName],
             ].map(([label, value]) => (
-              <div key={label} className="flex min-h-24 flex-col justify-center bg-[#10192b] px-5 py-5">
-                <dt className="text-[0.68rem] tracking-[0.18em] text-gold uppercase">{label}</dt>
-                <dd className="mt-1 text-sm leading-snug text-ivory/85">{value}</dd>
+              <div key={label} className="flex min-h-28 flex-col justify-center border-t border-ivory/10 px-5 py-5 lg:border-l lg:first:border-l-0">
+                <dt className="text-[0.68rem] tracking-[0.2em] text-gold uppercase">{label}</dt>
+                <dd className="mt-2 text-sm leading-snug text-ivory">{value}</dd>
               </div>
             ))}
         </dl>
@@ -100,7 +91,7 @@ export default async function HomePage() {
       <section id="summit-story" className="bg-ivory text-ink">
         <div className="container-summit grid items-stretch gap-10 py-12 lg:grid-cols-2 lg:py-16">
           <div className="flex h-full flex-col justify-center">
-            <p className="eyebrow">The conference</p>
+            <p className="eyebrow">02 — The conference</p>
             <h2 className="section-title mt-3">{site.pages.home_intro?.title ?? "The Summit"}</h2>
             <div className="mt-5 space-y-4 text-[1.02rem] leading-relaxed text-slate">
               {paragraphs(site.pages.home_intro?.body ?? lead ?? "").map((paragraph) => (
@@ -125,7 +116,7 @@ export default async function HomePage() {
           <h2 className="section-title mt-3">A weekend with the district</h2>
           <ul className="mt-6 grid gap-4 sm:grid-cols-2">
             {whyAttend.map((item) => (
-              <li key={item.title} className="border border-line bg-ivory p-4">
+              <li key={item.title} className="border border-line border-t-2 border-t-cranberry bg-paper p-5">
                 <Badge tone="soon">Draft for review</Badge>
                 <h3 className="mt-3 font-semibold text-ink">{item.title}</h3>
                 <p className="mt-2 text-sm text-slate">{item.detail}</p>
@@ -135,34 +126,34 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="speakers" className="bg-[#10192b] py-16 text-ivory lg:py-24">
+      <section id="speakers" className="bg-cranberry-soft py-16 text-ink lg:py-24">
         <div className="container-summit">
-          <p className="eyebrow">Speakers</p>
-          <h2 className="display mt-3 text-4xl text-ivory md:text-6xl">Voices of the district</h2>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-ivory/80">
+          <p className="text-xs font-semibold tracking-[0.16em] text-cranberry uppercase">Speakers</p>
+          <h2 className="display mt-3 text-4xl text-ink md:text-6xl">Voices of the district</h2>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate">
             {site.speakers.length === 0
               ? "Coming Soon. No speaker is listed until the person, photograph, designation, and biography are approved."
               : site.speakers.map((speaker) => speaker.name).join(" · ")}
           </p>
-          <Link href="/speakers" className="mt-8 inline-flex min-h-11 items-center text-sm font-semibold text-gold">Speaker directory</Link>
+          <Link href="/speakers" className="mt-8 inline-flex min-h-11 items-center text-sm font-semibold text-cranberry">Speaker directory</Link>
           {site.speakers.length === 0 ? (
-            <div className="mt-8 max-w-md bg-ivory p-4 text-ink">
+            <div className="mt-8 max-w-md border border-line bg-paper p-4 text-ink">
               <NotifyForm topic="speakers" targetNote={site.event.speakersTargetNote} />
             </div>
           ) : null}
         </div>
       </section>
 
-      <section id="venue" className="bg-[#07080d] py-20 text-ivory lg:py-28">
+      <section id="venue" className="bg-ivory py-16 text-ink lg:py-24">
         <div className="container-summit max-w-xl">
-          <p className="eyebrow">Venue</p>
-          <h2 className="display mt-3 text-4xl text-ivory md:text-6xl">{venueName}</h2>
-          <p className="mt-5 text-base leading-relaxed text-ivory/80">
+          <p className="text-xs font-semibold tracking-[0.16em] text-cranberry uppercase">Venue</p>
+          <h2 className="display mt-3 text-4xl text-ink md:text-6xl">{venueName}</h2>
+          <p className="mt-5 text-base leading-relaxed text-slate">
             Preferred region: {site.venue.region}. Address, map, meals, and travel stay unpublished until approval.
           </p>
-          <Link href="/venue" className="mt-8 inline-flex min-h-11 items-center text-sm font-semibold text-gold">Venue details</Link>
+          <Link href="/venue" className="mt-8 inline-flex min-h-11 items-center text-sm font-semibold text-cranberry">Venue details</Link>
           {site.venue.status !== "published" ? (
-            <div className="mt-8 bg-ivory p-4 text-ink">
+            <div className="mt-8 border border-line bg-paper p-4 text-ink">
               <NotifyForm topic="venue" targetNote={site.event.venueTargetNote} />
             </div>
           ) : null}
@@ -202,22 +193,22 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="benefits" className="bg-navy py-16 text-ivory lg:py-24">
+      <section id="benefits" className="bg-cranberry py-16 text-ivory lg:py-24">
         <div className="container-summit grid items-start gap-12 lg:grid-cols-2">
           <div>
-            <p className="eyebrow">Delegate benefits</p>
+            <p className="text-xs font-semibold tracking-[0.16em] text-ivory/80 uppercase">Delegate benefits</p>
             <h2 className="display mt-3 text-4xl text-ivory md:text-6xl">What registration gathers</h2>
-            <p className="mt-5 max-w-xl text-sm leading-relaxed text-ivory/75">
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-ivory/85">
               These are the published plans. Specific inclusions stay Coming Soon until they are approved.
             </p>
-            <Link href="/register" className="btn mt-8 inline-flex">Register Now</Link>
+            <Link href="/register" className="mt-8 inline-flex min-h-11 items-center bg-ivory px-5 py-3 font-semibold text-cranberry-deep hover:bg-paper">Register Now</Link>
           </div>
           <ol className="space-y-5">
               {site.highlights.map((item, index) => (
-                <li key={item.title} className="border-t border-ivory/15 pt-4">
-                  <p className="text-xs tracking-[0.16em] text-gold">{String(index + 1).padStart(2, "0")}</p>
+                <li key={item.title} className="border-t border-ivory/25 pt-4">
+                  <p className="text-xs tracking-[0.16em] text-ivory/75">{String(index + 1).padStart(2, "0")}</p>
                   <h3 className="mt-1 font-semibold text-ivory">{item.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-ivory/75">{item.detail}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-ivory/85">{item.detail}</p>
                 </li>
               ))}
           </ol>
@@ -329,13 +320,16 @@ async function OpenSlabPrice({ slabs, showPrice }: { slabs: PublicSlab[]; showPr
 
 function CountdownFallback() {
   return (
-    <div className="grid grid-cols-4 gap-2" aria-hidden="true">
-      {["Days", "Hours", "Minutes", "Seconds"].map((label) => (
-        <div key={label} className="min-w-0">
-          <p className="font-serif text-3xl font-semibold text-ivory sm:text-4xl">--</p>
-          <p className="mt-1 text-[0.68rem] tracking-[0.14em] text-ivory/60 uppercase">{label}</p>
-        </div>
-      ))}
+    <div aria-hidden="true">
+      <p className="text-[0.68rem] font-semibold tracking-[0.28em] text-gold uppercase">The Summit begins</p>
+      <div className="mt-3 grid grid-cols-4 border-t border-gold/40">
+        {["Days", "Hours", "Minutes", "Seconds"].map((label) => (
+          <div key={label} className="flex min-w-0 flex-col items-center border-r border-gold/25 px-1 py-3 text-center last:border-r-0">
+            <p className="font-serif text-[clamp(1.8rem,4vw,3.25rem)] leading-none font-semibold text-ivory">--</p>
+            <p className="mt-2 text-[0.62rem] tracking-[0.16em] text-ivory/60 uppercase">{label}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

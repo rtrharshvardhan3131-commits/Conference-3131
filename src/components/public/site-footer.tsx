@@ -17,7 +17,7 @@ const links = [
 
 export function SiteFooter({ site }: { site: PublicSite }) {
   return (
-    <footer className="mt-0 w-full max-w-full border-t border-gold/30 bg-navy text-ivory">
+    <footer className="mt-0 w-full max-w-full border-t-4 border-cranberry bg-navy text-ivory">
       <div className="container-summit grid min-w-0 gap-8 py-10 md:grid-cols-3 md:gap-10 md:py-12">
         <div>
           <DistrictLogo className="h-14 w-auto" />

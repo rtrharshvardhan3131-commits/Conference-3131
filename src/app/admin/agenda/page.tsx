@@ -41,7 +41,7 @@ export default async function AgendaAdminPage() {
         <input name="speaker_id" placeholder="Speaker ID, optional" className="border border-line px-3 py-3" />
         <input name="sort_order" type="number" defaultValue={1} className="border border-line px-3 py-3" />
         <select name="status" className="border border-line px-3 py-3"><option value="draft">Draft</option><option value="published">Published</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save session</button>
+        <button className="btn">Save session</button>
       </form>
     </section>
   )

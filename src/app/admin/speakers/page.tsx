@@ -23,7 +23,7 @@ export default async function SpeakersAdminPage() {
         <textarea name="biography" placeholder="Biography" className="border border-line px-3 py-3" />
         <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
         <select name="status" className="border border-line px-3 py-3"><option value="draft">Draft</option><option value="published">Published</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save speaker</button>
+        <button className="btn">Save speaker</button>
       </form>
     </section>
   )

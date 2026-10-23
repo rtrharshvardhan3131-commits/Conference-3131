@@ -9,7 +9,7 @@ export function SummitMark() {
         width={653}
         height={1024}
         priority
-        sizes="(max-width: 1024px) 168px, 240px"
+        sizes="(max-width: 1024px) 240px, 304px"
         className="reign-logo"
       />
     </div>

@@ -22,7 +22,7 @@ export default async function ContentPage() {
         <input name="summary" placeholder="Summary" className="border border-line px-3 py-3" />
         <textarea name="body" required rows={8} placeholder="Body. Separate paragraphs with a blank line." className="border border-line px-3 py-3" />
         <select name="status" className="border border-line px-3 py-3"><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archived</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save page</button>
+        <button className="btn">Save page</button>
       </form>
       <ul>{(pages ?? []).map((page) => <li key={page.slug}>{page.slug} · {page.title} · {page.status}</li>)}</ul>
       <form action={saveFaq} className="grid max-w-xl gap-3">
@@ -31,7 +31,7 @@ export default async function ContentPage() {
         <input name="question" required placeholder="Question" className="border border-line px-3 py-3" />
         <textarea name="answer" required placeholder="Answer" className="border border-line px-3 py-3" />
         <select name="status" className="border border-line px-3 py-3"><option value="published">Published</option><option value="draft">Draft</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save FAQ</button>
+        <button className="btn">Save FAQ</button>
       </form>
       <ul>{(faqs ?? []).map((faq) => <li key={faq.id}>{faq.question} · {faq.status}</li>)}</ul>
     </section>

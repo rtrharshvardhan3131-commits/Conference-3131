@@ -29,6 +29,7 @@ export function CountdownClock({
   timeZone,
   serverNow,
   onDark = false,
+  tone = "paper",
 }: {
   target: number
   label: string
@@ -37,6 +38,7 @@ export function CountdownClock({
   timeZone: string
   serverNow: number
   onDark?: boolean
+  tone?: "paper" | "rail"
 }) {
   const [now, setNow] = useState(serverNow)
 
@@ -54,24 +56,35 @@ export function CountdownClock({
     }
   }, [])
 
-  const muted = onDark ? "text-ivory/60" : "text-slate"
-  const strong = onDark ? "text-ivory" : "text-ink"
   const clock = countdownParts(now, target, startDate, endDate, timeZone)
+  const rail = tone === "rail" || onDark
 
   return (
     <div aria-live="polite">
       {"status" in clock ? (
-        <p className={`text-lg ${strong}`}>{clock.status}</p>
+        <p className={`text-lg font-semibold ${rail ? "text-ivory" : "text-cranberry"}`}>{clock.status}</p>
+      ) : rail ? (
+        <div>
+          <p className="text-[0.68rem] font-semibold tracking-[0.28em] text-gold uppercase">{label}</p>
+          <div className="mt-3 grid grid-cols-4 border-t border-gold/40">
+            {clock.parts.map(([unit, partLabel, value]) => (
+              <div key={unit} className="flex min-w-0 flex-col items-center border-r border-gold/25 px-1 py-3 text-center last:border-r-0">
+                <p className="font-serif text-[clamp(1.8rem,4vw,3.25rem)] leading-none font-semibold text-ivory tabular-nums">{String(value).padStart(2, "0")}</p>
+                <p className="mt-2 text-[0.62rem] tracking-[0.16em] text-ivory/60 uppercase">{partLabel}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <div>
-          <p className={`mb-2 text-xs tracking-[0.16em] uppercase ${muted}`}>{label}</p>
+          <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-cranberry uppercase">{label}</p>
           <div className="grid grid-cols-4 gap-2">
-          {clock.parts.map(([unit, label, value]) => (
-            <div key={unit} className="min-w-0">
-              <p className={`font-serif text-3xl font-semibold tabular-nums sm:text-4xl ${strong}`}>{String(value).padStart(2, "0")}</p>
-              <p className={`mt-1 text-[0.68rem] tracking-[0.14em] uppercase ${muted}`}>{label}</p>
-            </div>
-          ))}
+            {clock.parts.map(([unit, partLabel, value]) => (
+              <div key={unit} className="min-w-0 border border-cranberry/15 bg-paper px-1 py-3 text-center">
+                <p className="font-serif text-3xl font-semibold text-cranberry tabular-nums sm:text-4xl">{String(value).padStart(2, "0")}</p>
+                <p className="mt-1 text-[0.68rem] tracking-[0.14em] text-ink/70 uppercase">{partLabel}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

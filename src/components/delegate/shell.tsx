@@ -80,7 +80,7 @@ export function DelegateShell({ emailSlot, children }: { emailSlot?: React.React
             </div>
           </MobileSheet>
         </header>
-        <div className="px-5 py-8 md:px-10 md:py-10">{children}</div>
+        <div className="desk px-5 py-8 md:px-10 md:py-10">{children}</div>
       </div>
     </div>
   )

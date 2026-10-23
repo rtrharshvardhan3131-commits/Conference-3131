@@ -23,7 +23,7 @@ export default async function SponsorsAdminPage() {
         <input name="website" placeholder="https://" className="border border-line px-3 py-3" />
         <input name="logo" type="file" accept="image/jpeg,image/png,image/webp" />
         <select name="status" className="border border-line px-3 py-3"><option value="draft">Draft</option><option value="published">Published</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save sponsor</button>
+        <button className="btn">Save sponsor</button>
       </form>
     </section>
   )

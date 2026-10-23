@@ -47,7 +47,7 @@ export default async function SettingsPage() {
         <label className="flex gap-3"><input type="checkbox" name="accommodation" defaultChecked /> Accommodation preference required</label>
         <label className="flex gap-3"><input type="checkbox" defaultChecked disabled /> Club position required</label>
         <label className="flex gap-3"><input type="checkbox" defaultChecked disabled /> Zone required</label>
-        <button className="bg-navy px-5 py-3 text-ivory">Save settings</button>
+        <button className="btn">Save settings</button>
       </form>
       <form action={assignRole} className="grid max-w-xl gap-3 border-t border-line pt-8">
         <h2 className="font-serif text-3xl">Assign a role</h2>

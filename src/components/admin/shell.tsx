@@ -36,6 +36,7 @@ async function AdminDesktopNav() {
         <Link href="/admin" aria-label="Rotaract District 3131">
           <DistrictLogo className="h-12 w-auto" />
         </Link>
+        <p className="mt-4 font-serif text-xl">Committee desk</p>
       </div>
       <AdminNav links={staffNavigation(actor.roles)} />
       <div className="px-5 py-6">
@@ -69,7 +70,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <Suspense fallback={<aside className="hidden bg-navy lg:block lg:min-h-screen" />}>
         <AdminDesktopNav />
       </Suspense>
-      <div className="min-w-0 px-4 py-8 md:px-8 lg:px-10">
+      <div className="desk min-w-0 px-4 py-8 md:px-8 lg:px-10">
         <Suspense fallback={<PageSkeleton label="Opening the committee desk" />}>
           <AdminBody>{children}</AdminBody>
         </Suspense>

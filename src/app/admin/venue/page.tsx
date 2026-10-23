@@ -23,7 +23,7 @@ export default async function VenueAdminPage() {
         {["region", "name", "address", "map_url", "accommodation", "check_in_notes", "meal_notes", "transport_notes", "parking_notes", "accessibility_notes", "guidelines"].map((field) => (
           <textarea key={field} name={field} defaultValue={data?.[field] ?? ""} placeholder={field.replaceAll("_", " ")} className="border border-line px-3 py-3" />
         ))}
-        <button className="bg-navy px-5 py-3 text-ivory">Save venue</button>
+        <button className="btn">Save venue</button>
       </form>
     </section>
   )

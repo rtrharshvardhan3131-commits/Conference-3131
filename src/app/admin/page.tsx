@@ -48,7 +48,7 @@ export default async function AdminHome() {
       <dl className="mt-8 grid gap-px bg-line sm:grid-cols-2 xl:grid-cols-4">
         {stats.map(([label, value]) => (
           <div key={label} className="flex min-h-32 flex-col justify-between bg-paper px-5 py-5">
-            <dt className="text-[0.68rem] tracking-[0.16em] text-gold uppercase">{label}</dt>
+            <dt className="text-[0.68rem] tracking-[0.16em] text-cranberry uppercase">{label}</dt>
             <dd className="mt-3 font-serif text-4xl text-navy">{value}</dd>
           </div>
         ))}

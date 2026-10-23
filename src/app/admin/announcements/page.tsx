@@ -20,7 +20,7 @@ export default async function AnnouncementsPage() {
         <textarea name="body" required placeholder="Announcement" className="border border-line px-3 py-3" />
         <select name="audience" className="border border-line px-3 py-3"><option value="public">Public</option><option value="delegates">Delegates</option><option value="staff">Staff</option></select>
         <select name="status" className="border border-line px-3 py-3"><option value="draft">Draft</option><option value="published">Published</option></select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save announcement</button>
+        <button className="btn">Save announcement</button>
       </form>
     </section>
   )

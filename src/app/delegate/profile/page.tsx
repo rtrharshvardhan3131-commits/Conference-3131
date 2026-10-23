@@ -20,7 +20,7 @@ export default async function DelegateProfilePage() {
         <label className="grid gap-2">Emergency number<input name="emergency_contact_phone" defaultValue={data?.emergency_contact_phone ?? ""} className="border border-line px-3 py-3" /></label>
         <label className="grid gap-2">Dietary preference<input name="dietary_preference" defaultValue={data?.dietary_preference ?? ""} className="border border-line px-3 py-3" /></label>
         <label className="grid gap-2">Accommodation preference<input name="accommodation_preference" defaultValue={registration?.accommodation_preference ?? ""} className="border border-line px-3 py-3" /></label>
-        <button className="bg-navy px-5 py-3 text-ivory">Save profile</button>
+        <button className="btn">Save profile</button>
       </form>
     </section>
   )

@@ -32,7 +32,7 @@ export default async function DelegateRegistrationPage() {
         <form id="support" action={submitDelegateSupport} className="mt-8 grid max-w-xl gap-3">
           <input type="hidden" name="registration_id" value={data.id} />
           <label className="grid gap-2">Support request<textarea name="message" required minLength={10} className="border border-line px-3 py-3" /></label>
-          <button className="bg-navy px-5 py-3 text-ivory">Send to the committee</button>
+          <button className="btn">Send to the committee</button>
         </form>
       </div>
       {qr ? (

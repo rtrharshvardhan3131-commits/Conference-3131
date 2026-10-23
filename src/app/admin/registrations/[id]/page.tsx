@@ -84,7 +84,7 @@ export default async function RegistrationDetail({ params }: { params: Promise<{
             {TSHIRT_SIZES.map((size) => <option key={size} value={size}>{size}</option>)}
           </select>
         </label>
-        <button className="bg-navy px-5 py-3 text-ivory">Save corrections</button>
+        <button className="btn">Save corrections</button>
       </form>
       <form action={assignRoom} className="grid max-w-xl gap-4 border border-line p-5">
         <h2 className="font-serif text-3xl text-navy">Room allocation</h2>
@@ -99,7 +99,7 @@ export default async function RegistrationDetail({ params }: { params: Promise<{
         <label className="grid gap-2 text-sm">Check-in note
           <input name="room_note" defaultValue={data.room_note ?? ""} className="border border-line px-3 py-3" />
         </label>
-        <button className="bg-navy px-5 py-3 text-ivory">Save room</button>
+        <button className="btn">Save room</button>
       </form>
       <div>
         <h2 className="font-serif text-3xl">Audit</h2>

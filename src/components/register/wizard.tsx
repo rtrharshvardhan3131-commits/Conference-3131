@@ -338,11 +338,11 @@ export function RegistrationWizard({
       <div>
         <div className="flex gap-1.5" aria-hidden="true">
           {[1, 2, 3, 4].map((step) => (
-            <span key={step} className={`h-1 flex-1 ${step <= active ? "bg-navy" : "bg-line"}`} />
+            <span key={step} className={`h-1 flex-1 ${step <= active ? "bg-cranberry" : "bg-line"}`} />
           ))}
         </div>
         <div className="mt-4 flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate">Step {active} of 4</p>
+          <p className="text-xs font-semibold tracking-[0.22em] text-cranberry uppercase">Step {active} of 4</p>
           {active > 1 ? (
             <button type="button" className="min-h-11 px-1 text-sm font-semibold text-navy underline lg:hidden" onClick={retreat}>
               Back
@@ -397,8 +397,9 @@ export function RegistrationWizard({
             <div className="grid gap-2">
               <Input label="Rotary ID" autoComplete="off" inputMode="numeric" error={quietFieldError(form.formState.errors.rotaryId?.message, details.rotaryId)} {...form.register("rotaryId")} />
               {memberLookup ? (
-                <p className="border border-line bg-ivory px-3 py-3 text-sm leading-relaxed text-ink" role="status">
-                  Make sure your Rotary ID is correct. Loading your details from the district website.
+                <p className="flex items-center gap-3 border border-line bg-ivory px-3 py-3 text-sm leading-relaxed text-ink" role="status" aria-live="polite">
+                  <span className="inline-block size-5 shrink-0 animate-spin rounded-full border-2 border-line border-t-cranberry" aria-hidden="true" />
+                  Looking up this Rotary ID. Make sure it is correct.
                 </p>
               ) : memberNotice ? (
                 <p className="text-sm text-ink" role="status">{memberNotice}</p>

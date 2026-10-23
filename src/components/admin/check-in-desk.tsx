@@ -134,7 +134,7 @@ export function CheckInDesk({
         <label className="grid gap-2 text-sm">Exception reason, only if payment is not confirmed
           <input name="exception_reason" className="border border-line px-3 py-3" />
         </label>
-        <button className="inline-flex min-h-12 items-center justify-center bg-navy px-5 text-ivory">Check in</button>
+        <button className="btn">Check in</button>
       </form>
       {matches.length > 0 ? (
         <ul className="divide-y divide-line border-y border-line">

@@ -21,9 +21,9 @@ async function RegisterBody() {
   const site = await getCachedPublicSite()
   return (
     <>
-      <section className="border-b border-ivory/10 bg-navy px-4 py-4 text-ivory lg:hidden">
-        <p className="text-xs tracking-[0.18em] text-gold uppercase">{site.event.rotaractYear}</p>
-        <h1 className="mt-1 font-serif text-3xl font-semibold">Register</h1>
+      <section className="cinematic-band border-b border-gold/30 px-4 py-6 text-ivory lg:hidden">
+        <p className="text-xs font-semibold tracking-[0.22em] text-gold uppercase">{site.event.rotaractYear}</p>
+        <h1 className="mt-1 font-serif text-4xl font-semibold">Register</h1>
       </section>
       <div className="hidden lg:block">
         <PageIntro

@@ -21,7 +21,7 @@ export default async function CommunicationsPage() {
         <input name="title" required placeholder="Subject" className="border border-line px-3 py-3" />
         <textarea name="body" required placeholder="Message" className="border border-line px-3 py-3" />
         <label className="flex gap-3"><input type="checkbox" name="confirm" /> I confirm sending to {count ?? 0} confirmed delegates.</label>
-        <button className="bg-navy px-5 py-3 text-ivory">Send</button>
+        <button className="btn">Send</button>
       </form>
       <ul className="text-sm">{(campaigns ?? []).map((campaign) => <li key={campaign.created_at}>{campaign.title}: {campaign.sent_count} sent, {campaign.failed_count} not sent, of {campaign.recipient_count}</li>)}</ul>
     </section>

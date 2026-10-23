@@ -42,7 +42,7 @@ export default async function OffersPage() {
           <option value="published">Published</option>
           <option value="archived">Archived</option>
         </select>
-        <button className="bg-navy px-5 py-3 text-ivory">Save offer</button>
+        <button className="btn">Save offer</button>
       </form>
     </section>
   )

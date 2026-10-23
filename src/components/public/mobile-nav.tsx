@@ -152,7 +152,7 @@ export function MobileNav({ account }: { account: ReactNode }) {
       aria-label="Mobile"
       onClickCapture={onMenuClickCapture}
     >
-      <div className="flex items-center justify-end border-b border-ivory/10 px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
+      <div className="flex items-center justify-end border-b-2 border-cranberry px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
         <button
           type="button"
           className="inline-flex min-h-11 touch-manipulation items-center justify-center border border-ivory/40 px-3 text-sm"
