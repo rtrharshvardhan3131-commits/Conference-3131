@@ -207,9 +207,12 @@ input[type="radio"] {
 .cinematic-hero,
 .cinematic-band {
   background-color: #070b14;
+}
+
+.cinematic-band {
   background-image:
-    radial-gradient(ellipse 46% 58% at 78% 42%, rgba(210, 33, 99, 0.38), transparent 62%),
-    radial-gradient(ellipse 36% 48% at 68% 62%, rgba(198, 163, 107, 0.2), transparent 58%);
+    radial-gradient(ellipse 70% 90% at 50% 42%, rgba(210, 33, 99, 0.32), transparent 64%),
+    radial-gradient(ellipse 48% 60% at 50% 68%, rgba(198, 163, 107, 0.16), transparent 58%);
 }
 
 .hero-balance {
@@ -246,6 +249,21 @@ input[type="radio"] {
   aspect-ratio: 1;
 }
 
+.orbit-stage::before {
+  content: "";
+  position: absolute;
+  top: 27.5%;
+  left: 51.3%;
+  z-index: 0;
+  width: 170%;
+  height: 170%;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(210, 33, 99, 0.42), transparent 46%),
+    radial-gradient(circle at 50% 56%, rgba(198, 163, 107, 0.2), transparent 42%);
+  transform: translate(-50%, -50%);
+}
+
 .orbit-svg {
   position: absolute;
   inset: 0;
@@ -256,8 +274,40 @@ input[type="radio"] {
 
 .orbit-spin {
   transform-box: view-box;
-  transform-origin: 500px 420px;
+  transform-origin: 513px 275px;
   animation: orbit-spin 96s linear infinite;
+}
+
+.orbit-nucleus {
+  position: absolute;
+  top: 27.5%;
+  left: 51.3%;
+  z-index: 2;
+  width: 3.6%;
+  height: 3.6%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.orbit-nucleus-ring,
+.orbit-nucleus-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit-nucleus-ring {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid rgba(246, 241, 231, 0.9);
+}
+
+.orbit-nucleus-dot {
+  width: 33%;
+  height: 33%;
+  background: #d22163;
 }
 
 .orbit-logo {
