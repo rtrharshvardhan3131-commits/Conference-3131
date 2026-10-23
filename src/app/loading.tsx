@@ -8,7 +8,7 @@ export default function Loading() {
         <DistrictLogo className="h-9 w-auto" />
       </header>
       <main className="container-summit py-10">
-        <PageSkeleton label="The SOVEREIGN Summit" />
+        <PageSkeleton label="Opening this page" />
       </main>
     </div>
   )

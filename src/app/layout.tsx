@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The SOVEREIGN Summit",
     description: "Two Days. One Summit. A District United. 13–14 February 2027. Venue coming soon.",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+    siteName: "The SOVEREIGN Summit",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",

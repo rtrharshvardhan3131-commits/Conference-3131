@@ -1,6 +1,6 @@
 import Image from "next/image"
 import QRCode from "qrcode"
-import { submitDelegateSupport } from "@/app/actions/delegate"
+import { requestCancellation, submitDelegateSupport } from "@/app/actions/delegate"
 import { formatInrFromPaise } from "@/domain/money"
 import { createServerSupabase } from "@/lib/supabase/server"
 import { requireActor } from "@/server/session"
@@ -34,6 +34,15 @@ export default async function DelegateRegistrationPage() {
           <label className="grid gap-2">Support request<textarea name="message" required minLength={10} className="border border-line px-3 py-3" /></label>
           <button className="btn">Send to the committee</button>
         </form>
+        {data.status !== "cancelled" && data.status !== "refunded" ? (
+          <form action={requestCancellation} className="mt-8 grid max-w-xl gap-3 border border-line bg-ivory px-4 py-4">
+            <input type="hidden" name="registration_id" value={data.id} />
+            <p className="font-semibold">Ask to cancel</p>
+            <p className="text-sm text-slate">This records the request for the committee. It does not refund the payment or confirm a cancellation.</p>
+            <label className="grid gap-2 text-sm">Reason<textarea name="message" required minLength={10} className="border border-line px-3 py-3" /></label>
+            <button className="inline-flex min-h-11 items-center justify-center border border-ink px-4 font-semibold">Send cancellation request</button>
+          </form>
+        ) : null}
       </div>
       {qr ? (
         <div>

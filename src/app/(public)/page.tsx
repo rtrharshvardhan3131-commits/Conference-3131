@@ -5,21 +5,18 @@ import { ActiveSlab } from "@/components/public/active-slab"
 import { LiveCountdown } from "@/components/public/countdown"
 import { NotifyForm } from "@/components/public/notify-form"
 import { SummitGateway } from "@/components/public/summit-gateway"
-import { Badge } from "@/components/ui/badge"
 import { showPriceOnHome, showSocialProof, whatsAppShareUrl } from "@/domain/experience"
 import type { PublicSlab } from "@/domain/public-site"
 import { activeSlabs } from "@/domain/slabs"
 import { formatInrFromPaise } from "@/domain/money"
 import { appUrl } from "@/lib/env"
-import { formatEventRange, formatLongDate, paragraphs } from "@/lib/format"
+import { formatEventRange, paragraphs } from "@/lib/format"
 import { getCachedPublicSite } from "@/server/content"
 import { loadSocialProof } from "@/server/social-proof"
 
 export default async function HomePage() {
   const site = await getCachedPublicSite()
   const lead = paragraphs(site.pages.home_intro?.body ?? "")[0]
-  const dayOne = site.sessions.filter((session) => session.sessionDate === site.event.startDate)
-  const dayTwo = site.sessions.filter((session) => session.sessionDate === site.event.endDate)
   const venueName = site.venue.status === "published" && site.venue.name ? site.venue.name : "Venue Announcement Coming Soon"
   const publishedSponsors = site.sponsorTiers.filter((tier) => tier.sponsors.length > 0)
   const venueLine = site.venue.status === "published" && site.venue.name ? site.venue.name : `${site.venue.region}. Venue Coming Soon`
@@ -68,22 +65,6 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-b from-transparent to-[#0c1424]" />
       </section>
 
-      <section className="bg-[#0c1424] text-ivory">
-        <dl className="container-summit grid grid-cols-2 lg:grid-cols-4">
-            {[
-              ["Dates", formatEventRange(site.event.startDate, site.event.endDate)],
-              ["Format", site.event.durationLabel],
-              ["Organiser", site.event.districtName],
-              ["Venue", venueName],
-            ].map(([label, value]) => (
-              <div key={label} className="flex min-h-28 flex-col justify-center border-t border-ivory/10 px-5 py-5 lg:border-l lg:first:border-l-0">
-                <dt className="text-[0.68rem] tracking-[0.2em] text-gold uppercase">{label}</dt>
-                <dd className="mt-2 text-sm leading-snug text-ivory">{value}</dd>
-              </div>
-            ))}
-        </dl>
-      </section>
-
       <Suspense fallback={null}>
         <SocialProof />
       </Suspense>
@@ -110,86 +91,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-paper py-12">
+      <section id="programme" className="bg-paper py-12 text-ink">
         <div className="container-summit">
-          <p className="eyebrow">Why attend</p>
-          <h2 className="section-title mt-3">A weekend with the district</h2>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-            {whyAttend.map((item) => (
-              <li key={item.title} className="border border-line border-t-2 border-t-cranberry bg-paper p-5">
-                <Badge tone="soon">Draft for review</Badge>
-                <h3 className="mt-3 font-semibold text-ink">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate">{item.detail}</p>
-              </li>
-            ))}
+          <p className="eyebrow">Still to be published</p>
+          <h2 className="section-title mt-3">Agenda, speakers, and venue</h2>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate">
+            {site.speakers.length === 0 && site.sessions.length === 0 && site.venue.status !== "published"
+              ? "Names, timings, and the venue address stay off this site until the district approves them."
+              : "Published details are linked below. Anything still awaiting approval stays on its own page."}
+          </p>
+          <ul className="mt-6 grid gap-px bg-line sm:grid-cols-2">
+            <li className="bg-ivory px-5 py-5">
+              <Link href="/agenda" className="font-semibold text-ink">Agenda</Link>
+              <p className="mt-1 text-sm text-slate">{site.sessions.length === 0 ? "Coming Soon" : `${site.sessions.length} published sessions`}</p>
+            </li>
+            <li className="bg-ivory px-5 py-5">
+              <Link href="/speakers" className="font-semibold text-ink">Speakers</Link>
+              <p className="mt-1 text-sm text-slate">{site.speakers.length === 0 ? "Coming Soon" : site.speakers.map((speaker) => speaker.name).join(", ")}</p>
+            </li>
+            <li className="bg-ivory px-5 py-5">
+              <Link href="/venue" className="font-semibold text-ink">Venue</Link>
+              <p className="mt-1 text-sm text-slate">{venueName}</p>
+            </li>
+            <li className="bg-ivory px-5 py-5">
+              <Link href="/about" className="font-semibold text-ink">Recognition</Link>
+              <p className="mt-1 text-sm text-slate">Coming Soon. No award is listed until the district publishes it.</p>
+            </li>
           </ul>
-        </div>
-      </section>
-
-      <section id="speakers" className="bg-cranberry-soft py-16 text-ink lg:py-24">
-        <div className="container-summit">
-          <p className="text-xs font-semibold tracking-[0.16em] text-cranberry uppercase">Speakers</p>
-          <h2 className="display mt-3 text-4xl text-ink md:text-6xl">Voices of the district</h2>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate">
-            {site.speakers.length === 0
-              ? "Coming Soon. No speaker is listed until the person, photograph, designation, and biography are approved."
-              : site.speakers.map((speaker) => speaker.name).join(" · ")}
-          </p>
-          <Link href="/speakers" className="mt-8 inline-flex min-h-11 items-center text-sm font-semibold text-cranberry">Speaker directory</Link>
-          {site.speakers.length === 0 ? (
-            <div className="mt-8 max-w-md border border-line bg-paper p-4 text-ink">
-              <NotifyForm topic="speakers" targetNote={site.event.speakersTargetNote} />
-            </div>
-          ) : null}
-        </div>
-      </section>
-
-      <section id="venue" className="bg-ivory py-16 text-ink lg:py-24">
-        <div className="container-summit max-w-xl">
-          <p className="text-xs font-semibold tracking-[0.16em] text-cranberry uppercase">Venue</p>
-          <h2 className="display mt-3 text-4xl text-ink md:text-6xl">{venueName}</h2>
-          <p className="mt-5 text-base leading-relaxed text-slate">
-            Preferred region: {site.venue.region}. Address, map, meals, and travel stay unpublished until approval.
-          </p>
-          <Link href="/venue" className="mt-8 inline-flex min-h-11 items-center text-sm font-semibold text-cranberry">Venue details</Link>
-          {site.venue.status !== "published" ? (
-            <div className="mt-8 border border-line bg-paper p-4 text-ink">
-              <NotifyForm topic="venue" targetNote={site.event.venueTargetNote} />
-            </div>
-          ) : null}
-        </div>
-      </section>
-
-      <section id="experiences" className="bg-ivory py-16 text-ink lg:py-24">
-        <div className="container-summit">
-            <p className="eyebrow">Experiences</p>
-            <h2 className="section-title mt-3">The path through the weekend</h2>
-            {site.sessions.length === 0 ? (
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-slate">
-                Coming Soon. Day 1 is {formatLongDate(site.event.startDate)} and Day 2 is {formatLongDate(site.event.endDate)}. Sessions, fellowship, and the evening are published only after the district approves them.
-              </p>
-            ) : (
-              <ul className="mt-5 space-y-2 text-sm text-slate">
-                {[["Day 1", dayOne], ["Day 2", dayTwo]].map(([label, sessions]) => (
-                  <li key={String(label)}>
-                    <span className="font-semibold text-ink">{String(label)}. </span>
-                    {(sessions as typeof site.sessions).map((session) => session.title).join(", ")}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <Link href="/agenda" className="btn mt-8 inline-flex">Open the agenda</Link>
-        </div>
-      </section>
-
-      <section id="awards" className="bg-paper py-16 lg:py-24">
-        <div className="container-summit">
-          <p className="eyebrow">Awards</p>
-          <h2 className="section-title mt-3">Recognition</h2>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate">
-            Coming Soon. Recognition is part of the conference plan. No award, category, or recipient is listed until the district publishes it.
-          </p>
-          <Link href="/about" className="mt-8 inline-flex text-sm font-semibold text-ink underline decoration-gold underline-offset-4">About the Summit</Link>
         </div>
       </section>
 
@@ -288,13 +216,6 @@ export default async function HomePage() {
     </div>
   )
 }
-
-const whyAttend = [
-  { title: "Learn with the district", detail: "Draft for review. Session titles stay unpublished until they are approved." },
-  { title: "Meet clubs from every zone", detail: "Draft for review. Fellowship plans stay unpublished until they are approved." },
-  { title: "A residential weekend", detail: "Draft for review. Stay and meals stay unpublished until the venue is approved." },
-  { title: "Recognition", detail: "Draft for review. Awards stay unpublished until the district names them." },
-]
 
 async function SocialProof() {
   const proof = await loadSocialProof()

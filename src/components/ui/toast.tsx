@@ -7,7 +7,7 @@ export function Toast({ children, onDismiss }: { children: ReactNode; onDismiss:
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex items-center justify-between gap-3 border border-line bg-paper p-4 text-base text-ink shadow-sm"
+      className="fixed inset-x-4 bottom-[max(5.5rem,calc(env(safe-area-inset-bottom)+5rem))] z-50 flex items-center justify-between gap-3 border border-line bg-paper p-4 text-base text-ink shadow-sm lg:bottom-[max(1rem,env(safe-area-inset-bottom))]"
     >
       <p>{children}</p>
       <button
