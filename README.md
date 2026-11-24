@@ -13,7 +13,7 @@ Visitor-facing copy for new screens lives in components as plain English strings
 - Tailwind CSS 4
 - Supabase Auth, Postgres, and Storage
 - Zod and React Hook Form
-- Online transfer to the district account, with a payment screenshot reviewed by finance
+- Easebuzz online payment (primary), with manual bank transfer + screenshot as fallback
 - Supabase for the database, authentication, storage, and row level security
 - Gmail for registration email, from rtr.harshvardhan3131@gmail.com
 - `NEXT_PUBLIC_SHOW_PRICE_ON_HOME=true` prints only the open slab price on the homepage. It defaults to off.
@@ -55,9 +55,20 @@ Until Supabase is connected, the public pages render the approved initial inform
 
 ## Payments
 
-Delegates pay the registration amount by online transfer to the district account shown on the registration form, then upload a screenshot. The screenshot does not confirm the registration. A place is confirmed only after a finance administrator verifies the payment and records the review with a reason.
+Primary path: Easebuzz hosted checkout. The amount comes from the server. Confirmation requires a verified response hash, a successful Easebuzz Retrieve call, and the `confirm_gateway_payment` RPC. A browser redirect alone never marks anyone paid.
 
-Do not publish a personal account. Leave the district account lines unpublished until the account name, number, IFSC, and bank are approved.
+Fallback: online transfer to the district account, with a payment screenshot reviewed by finance. The screenshot does not confirm the registration.
+
+Set `EASEBUZZ_KEY`, `EASEBUZZ_SALT`, `EASEBUZZ_ENV=test|prod`, `NEXT_PUBLIC_SITE_URL`, and `CRON_SECRET`. In the Easebuzz dashboard, point the webhook to `/api/payments/easebuzz/webhook`. Return URL is `/api/payments/easebuzz/return`. A Vercel cron hits `/api/cron/easebuzz-reconcile` every 15 minutes for stale attempts.
+
+Do not publish a personal account. Leave the district account lines unpublished until the account name, number, IFSC, and bank are approved. Test Easebuzz settlement is not district money.
+
+### Easebuzz test checklist
+
+- Success: pay, return, registration becomes confirmed, confirmation email once.
+- Failure / cancel: attempt marked failed, registration not confirmed.
+- Tab closed after pay: webhook or reconcile still confirms.
+- Tampered hash: rejected; not confirmed.
 
 ## Email
 
@@ -89,7 +100,8 @@ npm run build
 ## Still needs an external account
 
 - Supabase project URL and keys
-- District account name, number, IFSC, and bank, once approved for the registration form
+- Easebuzz merchant key, salt, webhook URL, and (after KYC) production credentials
+- District account name, number, IFSC, and bank, once approved for the manual bank-transfer fallback
 - Gmail app password for rtr.harshvardhan3131@gmail.com
 - Approved venue, speakers, sponsors, programme, public phone, and public email
 - Official Rotaract or district logo files, if they are to replace the typographic wordmark

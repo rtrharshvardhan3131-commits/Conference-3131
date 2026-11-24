@@ -3,7 +3,7 @@ import { Suspense } from "react"
 import { connection } from "next/server"
 import { RegistrationWizard } from "@/components/register/wizard"
 import { PageIntro } from "@/components/public/page-intro"
-import { supabaseSecretKey } from "@/lib/env"
+import { isEasebuzzConfigured, supabaseSecretKey } from "@/lib/env"
 import { getCachedPublicSite } from "@/server/content"
 
 export const metadata: Metadata = { title: "Register" }
@@ -41,6 +41,7 @@ async function RegisterBody() {
           serverNow={new Date().toISOString()}
           policyVersion={site.event.policyVersion}
           paymentReviewNote={site.event.paymentReviewNote}
+          gatewayReady={isEasebuzzConfigured()}
         />
       </div>
     </>

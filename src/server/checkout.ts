@@ -9,7 +9,7 @@ import { formatInrFromPaise, pricesMatch } from "@/domain/money"
 import { participantRoleLabel } from "@/domain/participant-role"
 import { normalizeRotaryId } from "@/domain/district-members"
 import { ensureDelegateAccount } from "@/server/delegate-account"
-import { appUrl, isPaymentConfigured, supabaseSecretKey } from "@/lib/env"
+import { appUrl, isEasebuzzConfigured, isPaymentConfigured, supabaseSecretKey } from "@/lib/env"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { codeFromDatabase, logServerError, publicError } from "@/server/errors"
 import { sendRegistrationEmail, registrationMailFromRow } from "@/server/email"
@@ -19,7 +19,7 @@ export type CheckoutInput = {
   details: unknown
   slabId: string
   consent: { terms: boolean; privacy: boolean; refunds: boolean; guidelines: boolean }
-  mode: "razorpay" | "manual"
+  mode: "razorpay" | "manual" | "easebuzz"
   manualReference?: string
   governmentId: StoredRegistrationDocument
   photograph: StoredRegistrationDocument
@@ -39,7 +39,7 @@ export type CheckoutStart = {
   slabName: string
   orderId: string | null
   keyId: string | null
-  mode: "razorpay" | "manual"
+  mode: "razorpay" | "manual" | "easebuzz"
 }
 
 function signaturesMatch(expected: string, actual: string): boolean {
@@ -153,6 +153,7 @@ export async function startCheckout(input: CheckoutInput): Promise<CheckoutStart
     throw new Error("APP:consent_required")
   }
   if (input.mode === "razorpay" && !isPaymentConfigured()) throw new Error("APP:payment_unconfigured")
+  if (input.mode === "easebuzz" && !isEasebuzzConfigured()) throw new Error("APP:payment_unconfigured")
   const manualReference = (input.manualReference ?? "").trim()
   if (input.mode === "manual" && !input.paymentProof) {
     throw new Error("Upload a payment screenshot before submitting for finance review.")
@@ -260,9 +261,10 @@ export async function startCheckout(input: CheckoutInput): Promise<CheckoutStart
     const orderId = await createRazorpayOrder(created.amount_paise, reference, created.registration_id)
     const { error: updateError } = await admin
       .from("payments")
-      .update({ provider_order_id: orderId, status: "pending" })
+      .update({ provider_order_id: orderId, status: "pending", payment_method: "gateway" })
       .eq("id", created.payment_id)
     if (updateError) throw new Error("APP:unconfigured")
+    await admin.from("registrations").update({ payment_method: "gateway" }).eq("id", created.registration_id)
     return {
       registrationId: created.registration_id,
       paymentId: created.payment_id,
@@ -275,6 +277,26 @@ export async function startCheckout(input: CheckoutInput): Promise<CheckoutStart
       mode: "razorpay",
     }
   }
+  if (input.mode === "easebuzz") {
+    await admin
+      .from("payments")
+      .update({ provider: "easebuzz", payment_method: "gateway", status: "created" })
+      .eq("id", created.payment_id)
+    await admin.from("registrations").update({ payment_method: "gateway" }).eq("id", created.registration_id)
+    return {
+      registrationId: created.registration_id,
+      paymentId: created.payment_id,
+      reference,
+      amountPaise: created.amount_paise,
+      currency: "INR",
+      slabName: created.slab_name,
+      orderId: null,
+      keyId: null,
+      mode: "easebuzz",
+    }
+  }
+  await admin.from("payments").update({ payment_method: "manual" }).eq("id", created.payment_id)
+  await admin.from("registrations").update({ payment_method: "manual" }).eq("id", created.registration_id)
   return {
     registrationId: created.registration_id,
     paymentId: created.payment_id,
@@ -284,7 +306,7 @@ export async function startCheckout(input: CheckoutInput): Promise<CheckoutStart
     slabName: created.slab_name,
     orderId: null,
     keyId: null,
-    mode: input.mode,
+    mode: "manual",
   }
 }
 

@@ -29,6 +29,7 @@ export function RegistrationWizard({
   serverNow,
   policyVersion,
   paymentReviewNote,
+  gatewayReady = false,
 }: {
   slabs: PublicSlab[]
   registrationOpen: boolean
@@ -37,6 +38,7 @@ export function RegistrationWizard({
   serverNow: string
   policyVersion: string
   paymentReviewNote: string
+  gatewayReady?: boolean
 }) {
   const [reached, setReached] = useState(1)
   const [active, setActive] = useState(1)
@@ -61,6 +63,8 @@ export function RegistrationWizard({
   const [memberNotice, setMemberNotice] = useState("")
   const [memberToast, setMemberToast] = useState("")
   const [memberLookup, setMemberLookup] = useState(false)
+  const [manualOpen, setManualOpen] = useState(false)
+  const [gatewayRegistrationId, setGatewayRegistrationId] = useState<string | null>(null)
   const submitLock = useRef(false)
   const historySteps = useRef<number[]>([1])
   const leaving = useRef(false)
@@ -252,7 +256,92 @@ export function RegistrationWizard({
     setDraftNotice(false)
   }
 
-  async function pay() {
+  async function finishLocalDraft() {
+    try { localStorage.removeItem(DRAFT_KEY) } catch { /* The draft can stay if storage is blocked. */ }
+    const extra = historySteps.current.length - 1
+    leaving.current = true
+    if (extra > 0) {
+      await new Promise<void>((resolve) => {
+        function done() {
+          window.removeEventListener("popstate", done)
+          resolve()
+        }
+        window.addEventListener("popstate", done)
+        window.history.go(-extra)
+      })
+    }
+  }
+
+  async function createPending(mode: "manual" | "easebuzz") {
+    const body = new FormData()
+    body.set("details", JSON.stringify(form.getValues()))
+    body.set("slabId", selected?.id ?? "")
+    body.set("terms", String(consent.terms))
+    body.set("privacy", String(consent.privacy))
+    body.set("refunds", String(consent.refunds))
+    body.set("guidelines", String(consent.guidelines))
+    body.set("mode", mode)
+    body.set("manualReference", manualReference)
+    body.set("couponCode", applied?.code ?? "")
+    if (governmentId) body.set("governmentId", governmentId)
+    if (photograph) body.set("photograph", photograph)
+    if (mode === "manual" && paymentProof) body.set("paymentProof", paymentProof)
+    return beginCheckout(body)
+  }
+
+  async function startEasebuzz(registrationId: string) {
+    const response = await fetch("/api/payments/easebuzz/initiate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ registrationId }),
+    })
+    const payload = (await response.json()) as { ok?: boolean; url?: string; message?: string }
+    if (!response.ok || !payload.ok || !payload.url) {
+      throw new Error(payload.message || "The payment page could not be opened. Please try again.")
+    }
+    window.location.assign(payload.url)
+  }
+
+  async function payOnline() {
+    if (submitLock.current) return
+    setMessage("")
+    const governmentNote = documentNote(governmentId)
+    const photographMissing = documentNote(photograph)
+    if (governmentNote || photographMissing) {
+      setGovernmentIdNote(governmentNote ?? "")
+      setPhotographNote(photographMissing ?? "")
+      scrollToField(governmentNote ? "government-id" : "photograph")
+      return
+    }
+    if (!gatewayReady) {
+      setMessage("Online payment is not connected yet. Use bank transfer below, or try again later.")
+      return
+    }
+    submitLock.current = true
+    setPending(true)
+    try {
+      let registrationId = gatewayRegistrationId
+      if (!registrationId) {
+        const result = await createPending("easebuzz")
+        if (!result.ok) {
+          submitLock.current = false
+          setPending(false)
+          setMessage(result.message)
+          return
+        }
+        registrationId = result.data.registrationId
+        setGatewayRegistrationId(registrationId)
+        await finishLocalDraft()
+      }
+      await startEasebuzz(registrationId)
+    } catch (error) {
+      submitLock.current = false
+      setPending(false)
+      setMessage(error instanceof Error ? error.message : "The payment page could not be opened. Please try again.")
+    }
+  }
+
+  async function payManual() {
     if (submitLock.current) return
     setMessage("")
     const governmentNote = documentNote(governmentId)
@@ -267,40 +356,15 @@ export function RegistrationWizard({
     }
     submitLock.current = true
     setPending(true)
-    const body = new FormData()
-    body.set("details", JSON.stringify(form.getValues()))
-    body.set("slabId", selected?.id ?? "")
-    body.set("terms", String(consent.terms))
-    body.set("privacy", String(consent.privacy))
-    body.set("refunds", String(consent.refunds))
-    body.set("guidelines", String(consent.guidelines))
-    body.set("mode", "manual")
-    body.set("manualReference", manualReference)
-    body.set("couponCode", applied?.code ?? "")
-    if (governmentId) body.set("governmentId", governmentId)
-    if (photograph) body.set("photograph", photograph)
-    if (paymentProof) body.set("paymentProof", paymentProof)
     try {
-      const result = await beginCheckout(body)
+      const result = await createPending("manual")
       if (!result.ok) {
         submitLock.current = false
         setPending(false)
         setMessage(result.message)
         return
       }
-      try { localStorage.removeItem(DRAFT_KEY) } catch { /* The draft can stay if storage is blocked. */ }
-      const extra = historySteps.current.length - 1
-      leaving.current = true
-      if (extra > 0) {
-        await new Promise<void>((resolve) => {
-          function done() {
-            window.removeEventListener("popstate", done)
-            resolve()
-          }
-          window.addEventListener("popstate", done)
-          window.history.go(-extra)
-        })
-      }
+      await finishLocalDraft()
       router.push("/register/confirmation")
     } catch {
       submitLock.current = false
@@ -367,7 +431,7 @@ export function RegistrationWizard({
       {message ? (
         <div role="alert" className="border border-red-800/30 bg-red-50 px-4 py-3 text-red-900">
           <p>{message}</p>
-          <button type="button" className="mt-3 min-h-11 underline" onClick={() => void pay()}>Retry</button>
+          <button type="button" className="mt-3 min-h-11 underline" onClick={() => void (gatewayReady ? payOnline() : payManual())}>Retry</button>
         </div>
       ) : null}
       <StepSection id={1} title="Details" open={active === 1} summary={oneLine([details.fullName, details.club, details.districtZone])} onEdit={active === 1 ? undefined : () => editStep(1)}>
@@ -561,44 +625,80 @@ export function RegistrationWizard({
         </StepSection>
       ) : null}
       {reached >= 4 && selected ? (
-        <StepSection id={4} title="Payment" open={active === 4} summary={paymentProof ? `${formatInrFromPaise(payablePaise)} · screenshot added` : `${formatInrFromPaise(payablePaise)} · screenshot not added yet`} onEdit={active === 4 ? undefined : () => editStep(4)}>
+        <StepSection
+          id={4}
+          title="Payment"
+          open={active === 4}
+          summary={gatewayReady ? `${formatInrFromPaise(payablePaise)} · pay online` : `${formatInrFromPaise(payablePaise)} · bank transfer`}
+          onEdit={active === 4 ? undefined : () => editStep(4)}
+        >
           {active === 4 ? (
             <div className="grid gap-4">
-              <ol className="grid gap-2 text-sm text-ink">
-                <li>1. Transfer {formatInrFromPaise(payablePaise)} to the district account.</li>
-                <li>2. Upload the payment screenshot.</li>
-                <li>3. Wait for finance to confirm it.</li>
-              </ol>
-              <p className="text-sm text-slate">{paymentReviewNote}</p>
+              <p className="text-sm text-slate">A browser message is not confirmation. The registration is confirmed only after the payment is verified on the server.</p>
               {applied ? <p className="text-sm text-slate">{applied.name} applied. {formatInrFromPaise(applied.discountPaise)} is taken off the open fee.</p> : null}
-              <CopyRow label="Amount to transfer" value={formatInrFromPaise(payablePaise)} />
-              <dl className="border border-line bg-ivory px-4">
-                {districtBankLines().map((line) => (
-                  <div key={line.label} className="grid min-w-0 gap-1 border-b border-line py-3 last:border-b-0">
-                    <dt className="text-sm text-slate">{line.label}</dt>
-                    <dd className="flex min-w-0 items-center justify-between gap-3 break-words text-navy">{line.value || "Not published"}{line.value ? <CopyButton value={line.value} /> : null}</dd>
+              <CopyRow label="Amount to pay" value={formatInrFromPaise(payablePaise)} />
+              {gatewayReady ? (
+                <>
+                  <button type="button" disabled={pending} className="register-next btn min-h-12 w-full text-base" onClick={() => void payOnline()}>
+                    {pending ? "Opening payment…" : `Pay ${formatInrFromPaise(payablePaise)}`}
+                  </button>
+                  {gatewayRegistrationId ? (
+                    <button type="button" disabled={pending} className="inline-flex min-h-12 items-center justify-center border border-navy px-4 font-semibold" onClick={() => void payOnline()}>
+                      Retry payment
+                    </button>
+                  ) : null}
+                </>
+              ) : (
+                <p className="border border-line bg-ivory px-4 py-3 text-sm text-slate">Online payment is not connected yet. Use bank transfer below.</p>
+              )}
+              <div className="border border-line bg-paper">
+                <button
+                  type="button"
+                  className="flex min-h-12 w-full items-center justify-between px-4 text-left font-semibold"
+                  aria-expanded={manualOpen}
+                  onClick={() => setManualOpen((open) => !open)}
+                >
+                  Pay by bank transfer instead
+                  <span className="text-sm font-normal text-slate">{manualOpen ? "Hide" : "Show"}</span>
+                </button>
+                {manualOpen ? (
+                  <div className="grid gap-4 border-t border-line px-4 py-4">
+                    <ol className="grid gap-2 text-sm text-ink">
+                      <li>1. Transfer {formatInrFromPaise(payablePaise)} to the district account.</li>
+                      <li>2. Upload the payment screenshot.</li>
+                      <li>3. Wait for finance to confirm it.</li>
+                    </ol>
+                    <p className="text-sm text-slate">{paymentReviewNote}</p>
+                    <dl className="border border-line bg-ivory px-4">
+                      {districtBankLines().map((line) => (
+                        <div key={line.label} className="grid min-w-0 gap-1 border-b border-line py-3 last:border-b-0">
+                          <dt className="text-sm text-slate">{line.label}</dt>
+                          <dd className="flex min-w-0 items-center justify-between gap-3 break-words text-navy">{line.value || "Not published"}{line.value ? <CopyButton value={line.value} /> : null}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    <p className="text-sm text-slate">Transfer only to the account shown here. A screenshot does not confirm the registration.</p>
+                    <FileField
+                      field="payment-proof"
+                      label="Payment screenshot"
+                      hint="A screenshot of the online payment. JPG, PNG, WEBP, or PDF, up to 5 MB."
+                      file={paymentProof}
+                      error={paymentProofNote}
+                      onChange={(file) => {
+                        setPaymentProof(file)
+                        setPaymentProofNote("")
+                      }}
+                    />
+                    <label className="grid gap-2 text-sm">
+                      UTR or transaction reference, if you have one
+                      <input value={manualReference} onChange={(event) => { setDirty(true); setManualReference(event.target.value) }} className="border border-line bg-ivory px-3 py-3 text-base" />
+                    </label>
+                    <button type="button" disabled={pending} className="btn min-h-12 w-full text-base" onClick={() => void payManual()}>
+                      {pending ? "Submitting…" : "Submit for finance review"}
+                    </button>
                   </div>
-                ))}
-              </dl>
-              <p className="text-sm text-slate">Transfer only to the account shown here. A screenshot does not confirm the registration.</p>
-              <FileField
-                field="payment-proof"
-                label="Payment screenshot"
-                hint="A screenshot of the online payment. JPG, PNG, WEBP, or PDF, up to 5 MB."
-                file={paymentProof}
-                error={paymentProofNote}
-                onChange={(file) => {
-                  setPaymentProof(file)
-                  setPaymentProofNote("")
-                }}
-              />
-              <label className="grid gap-2 text-sm">
-                UTR or transaction reference, if you have one
-                <input value={manualReference} onChange={(event) => { setDirty(true); setManualReference(event.target.value) }} className="border border-line bg-ivory px-3 py-3 text-base" />
-              </label>
-              <button type="button" disabled={pending} className="register-next btn min-h-12 w-full text-base" onClick={() => pay()}>
-                {pending ? "Submitting…" : "Submit for finance review"}
-              </button>
+                ) : null}
+              </div>
             </div>
           ) : null}
         </StepSection>

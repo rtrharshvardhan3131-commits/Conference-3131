@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { COUNCIL_POSITIONS } from "@/domain/council-positions"
 import { toCsv } from "@/domain/csv"
+import { deskWorkbook } from "@/domain/desk-workbook"
 import { inspectRegistrationDocument, safeDownloadName } from "@/domain/documents"
 import { formatInrFromPaise, pricesMatch, rupeesToPaise } from "@/domain/money"
 import { clientPaymentReportIsIgnored, decidePaymentConfirmation } from "@/domain/payments"
@@ -232,6 +233,32 @@ describe("transitions, permissions, webhooks, csv, and sessions", () => {
 
   it("neutralises spreadsheet formulas", () => {
     expect(toCsv(["name"], [["=cmd"], ["Ada"]])).toContain("'=cmd")
+    expect(deskWorkbook([{
+      reference: "SS-1",
+      fullName: "=cmd",
+      phone: "9876543210",
+      club: "Rotaract Club of Aundh",
+      zone: "Zone 1",
+      status: "confirmed",
+      slabName: "Early Bird",
+      checkedInAt: null,
+      rotaryId: "10000000",
+      tshirtSize: "M",
+      participantRole: "rotaractor",
+    }])).toContain("'=cmd")
+  })
+
+  it("groups the registration desk workbook by club", () => {
+    const workbook = deskWorkbook([
+      { reference: "B", fullName: "Bea", phone: "9876543210", club: "Rotaract Club of Baner", zone: "Zone 2", status: "pending_payment", slabName: "Early Bird", checkedInAt: null, rotaryId: "2", tshirtSize: "S", participantRole: "rotaractor" },
+      { reference: "A", fullName: "Ada", phone: "9876543211", club: "Rotaract Club of Aundh", zone: "Zone 1", status: "confirmed", slabName: "Early Bird", checkedInAt: "2027-02-13T04:00:00Z", rotaryId: "1", tshirtSize: "M", participantRole: "rotaractor" },
+    ])
+    const aundh = workbook.indexOf("Rotaract Club of Aundh")
+    const baner = workbook.indexOf("Rotaract Club of Baner")
+    expect(aundh).toBeGreaterThan(-1)
+    expect(aundh).toBeLessThan(baner)
+    expect(workbook).toContain("1 registered · 1 confirmed")
+    expect(workbook).toContain("Checked in")
   })
 
   it("flags overlapping sessions in the same room", () => {

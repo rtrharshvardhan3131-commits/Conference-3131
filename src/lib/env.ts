@@ -26,6 +26,14 @@ export function isPaymentConfigured(): boolean {
   return Boolean(read("RAZORPAY_KEY_ID") && read("RAZORPAY_KEY_SECRET") && read("NEXT_PUBLIC_RAZORPAY_KEY_ID"))
 }
 
+export function isEasebuzzConfigured(): boolean {
+  return Boolean(read("EASEBUZZ_KEY") && read("EASEBUZZ_SALT"))
+}
+
+export function siteUrl(): string {
+  return read("NEXT_PUBLIC_SITE_URL") ?? read("NEXT_PUBLIC_APP_URL") ?? "http://localhost:3000"
+}
+
 export function isEmailConfigured(): boolean {
   return Boolean(read("GMAIL_APP_PASSWORD"))
 }

@@ -1,4 +1,4 @@
-import { approveManualPayment } from "@/app/actions/admin"
+import { approveManualPayment, reconcileEasebuzzAttempts } from "@/app/actions/admin"
 import { formatInrFromPaise } from "@/domain/money"
 import { isSupabaseConfigured } from "@/lib/env"
 import { createServerSupabase } from "@/lib/supabase/server"
@@ -11,27 +11,68 @@ export default async function PaymentsPage() {
   const actor = await requirePermission("view_payments")
   if (!isSupabaseConfigured()) return <OfflineDesk title="Payments" />
   const supabase = await createServerSupabase()
-  const { data } = await supabase.from("payments").select("id, registration_id, provider, amount_paise, status, created_at, proof_path").order("created_at", { ascending: false }).limit(100)
+  const { data } = await supabase
+    .from("payments")
+    .select("id, registration_id, provider, payment_method, provider_order_id, provider_payment_id, amount_paise, status, created_at, proof_path")
+    .order("created_at", { ascending: false })
+    .limit(100)
   const registrationIds = [...new Set((data ?? []).map((payment) => payment.registration_id))]
   const { data: people } = registrationIds.length === 0
     ? { data: [] }
     : await supabase.from("registrations").select("id, reference, full_name").in("id", registrationIds)
+  const { data: attempts } = registrationIds.length === 0
+    ? { data: [] }
+    : await supabase
+      .from("payment_attempts")
+      .select("registration_id, txnid, easepayid, mode, status, created_at")
+      .in("registration_id", registrationIds)
+      .order("created_at", { ascending: false })
+  const latestAttempt = new Map<string, { txnid: string; easepayid: string | null; mode: string | null; status: string }>()
+  for (const attempt of attempts ?? []) {
+    if (!latestAttempt.has(attempt.registration_id)) {
+      latestAttempt.set(attempt.registration_id, {
+        txnid: attempt.txnid,
+        easepayid: attempt.easepayid,
+        mode: attempt.mode,
+        status: attempt.status,
+      })
+    }
+  }
   const delegates = new Map((people ?? []).map((person) => [person.id, person]))
   const finance = actor.roles.includes("super_admin") || actor.roles.includes("finance_admin")
   return (
     <section>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-serif text-5xl text-navy">Payments</h1>
-        {finance ? <a className="border border-navy px-4 py-2 text-sm" href="/api/admin/exports/payments">Download CSV</a> : null}
+        <div className="flex flex-wrap gap-3">
+          {finance ? (
+            <form action={reconcileEasebuzzAttempts}>
+              <button className="border border-navy px-4 py-2 text-sm">Reconcile Easebuzz</button>
+            </form>
+          ) : null}
+          {finance ? <a className="border border-navy px-4 py-2 text-sm" href="/api/admin/exports/payments">Download CSV</a> : null}
+        </div>
       </div>
-      <p className="mt-3 max-w-2xl text-slate">Open the screenshot, then verify. The registration is confirmed only after this check.</p>
+      <p className="mt-3 max-w-2xl text-slate">Verify only manual screenshots. Online Easebuzz payments confirm through the gateway, webhook, or reconcile.</p>
       <div className="mt-8 overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-line text-slate"><tr><th className="py-3">Delegate</th><th>Amount</th><th>Status</th><th>Review</th></tr></thead>
+        <table className="w-full min-w-[960px] text-left text-sm">
+          <thead className="border-b border-line text-slate">
+            <tr>
+              <th className="py-3">Delegate</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Gateway</th>
+              <th>Status</th>
+              <th>Review</th>
+            </tr>
+          </thead>
           <tbody>
             {(data ?? []).map((payment) => {
               const delegate = delegates.get(payment.registration_id)
               const verified = payment.status === "captured"
+              const attempt = latestAttempt.get(payment.registration_id)
+              const txnid = payment.provider_order_id || attempt?.txnid || "—"
+              const easepayid = payment.provider_payment_id || attempt?.easepayid || "—"
               return (
                 <tr key={payment.id} className="border-b border-line align-top">
                   <td className="py-3">
@@ -39,6 +80,15 @@ export default async function PaymentsPage() {
                     <span className="mt-1 block text-slate">{delegate?.reference ?? "—"}</span>
                   </td>
                   <td>{formatInrFromPaise(payment.amount_paise)}</td>
+                  <td>
+                    <span className="block">{payment.payment_method ?? payment.provider}</span>
+                    <span className="mt-1 block text-slate">{payment.provider}</span>
+                  </td>
+                  <td>
+                    <span className="block">txn {txnid}</span>
+                    <span className="mt-1 block text-slate">easepay {easepayid}</span>
+                    {attempt ? <span className="mt-1 block text-slate">attempt {attempt.status}{attempt.mode ? ` · ${attempt.mode}` : ""}</span> : null}
+                  </td>
                   <td>{verified ? "Verified" : payment.status.replaceAll("_", " ")}</td>
                   <td>
                     {payment.proof_path ? (

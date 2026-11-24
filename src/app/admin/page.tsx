@@ -57,7 +57,10 @@ export default async function AdminHome() {
         <div className="flex h-full min-w-0 flex-col">
           <div className="mb-4 flex items-end justify-between gap-3">
             <h2 className="font-serif text-3xl text-navy">Latest registrations</h2>
-            <a className="text-sm font-semibold underline decoration-gold underline-offset-4" href="/api/admin/exports/registrations">Download CSV</a>
+            <span className="flex flex-wrap gap-4">
+              <a className="text-sm font-semibold underline decoration-gold underline-offset-4" href="/api/admin/exports/registration-desk">Club list (Excel)</a>
+              <a className="text-sm font-semibold underline decoration-gold underline-offset-4" href="/api/admin/exports/registrations">Download CSV</a>
+            </span>
           </div>
           <RegistrationRows rows={snapshot.rows.slice(0, 8)} />
         </div>

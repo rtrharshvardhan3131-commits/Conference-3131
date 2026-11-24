@@ -113,8 +113,11 @@ export async function beginCheckout(formData: FormData): Promise<{ ok: true; dat
     const headerStore = await headers()
     const rawDetails = formData.get("details")
     const details = typeof rawDetails === "string" ? JSON.parse(rawDetails) as unknown : null
-    const mode = formData.get("mode")
-    if (mode !== "manual") throw new Error("Pay the district account and upload the payment screenshot.")
+    const modeValue = String(formData.get("mode") ?? "")
+    if (modeValue !== "manual" && modeValue !== "easebuzz") {
+      throw new Error("Pay online with Easebuzz, or transfer to the district account and upload the payment screenshot.")
+    }
+    const mode = modeValue as "manual" | "easebuzz"
     const site = await getCachedPublicSite()
     const actor = await getActor()
     if (isSupabaseConfigured()) {
@@ -125,6 +128,7 @@ export async function beginCheckout(formData: FormData): Promise<{ ok: true; dat
     const photograph = await readPhotographUpload(formData.get("photograph"))
     const proofValue = formData.get("paymentProof")
     const paymentProof = proofValue instanceof File && proofValue.size > 0 ? await readRegistrationUpload(proofValue, "payment screenshot") : null
+    if (mode === "manual" && !paymentProof) throw new Error("Upload a payment screenshot before submitting for finance review.")
     const data = await startCheckout({
       details,
       slabId: String(formData.get("slabId") ?? ""),

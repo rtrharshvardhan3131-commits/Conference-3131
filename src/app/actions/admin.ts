@@ -15,6 +15,7 @@ import { canTransitionRegistration } from "@/domain/status"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { requirePermission } from "@/server/session"
 import { confirmCapturedPayment } from "@/server/checkout"
+import { reconcileStaleEasebuzzAttempts } from "@/server/easebuzz-settle"
 import { sendCampaignEmail } from "@/server/email"
 import { logServerError } from "@/server/errors"
 
@@ -370,6 +371,16 @@ export async function approveManualPayment(formData: FormData) {
     reconciliation: "manually_verified",
   })
   await audit(actor.id, "payment.manual_verify", "payments", payment.id, { reason: "Screenshot reviewed" })
+  revalidatePath("/admin/payments")
+  revalidatePath("/admin")
+  revalidatePath("/admin/registrations")
+  redirect("/admin/payments")
+}
+
+export async function reconcileEasebuzzAttempts() {
+  const actor = await guard("reconcile_payments")
+  const result = await reconcileStaleEasebuzzAttempts(30)
+  await audit(actor.id, "payment.easebuzz_reconcile", "payment_attempts", null, result)
   revalidatePath("/admin/payments")
   revalidatePath("/admin")
   revalidatePath("/admin/registrations")

@@ -19,7 +19,10 @@ export default async function RegistrationsPage({ searchParams }: { searchParams
           <p className="eyebrow">Registration monitor</p>
           <h1 className="mt-3 font-serif text-5xl text-navy">Registrations</h1>
         </div>
-        <a className="btn inline-flex" href="/api/admin/exports/registrations">Download CSV</a>
+        <div className="flex flex-wrap gap-3">
+          <a className="btn inline-flex" href="/api/admin/exports/registration-desk">Club list (Excel)</a>
+          <a className="inline-flex min-h-11 items-center border border-navy px-4 font-semibold" href="/api/admin/exports/registrations">Download CSV</a>
+        </div>
       </div>
       <p className="mt-4 max-w-2xl text-sm text-slate">{rows.length} of {snapshot.rows.length} records. Amounts here are the fee stored on each registration.</p>
       <form className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_16rem_auto]" method="get">

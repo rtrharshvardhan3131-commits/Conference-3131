@@ -21,6 +21,7 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
     <section className="max-w-xl">
       <h1 className="font-serif text-5xl text-navy">Check-in</h1>
       <p className="mt-3 text-slate">Scan the QR or type the reference. The code carries the reference only. Payment is checked on the server. Confirmed registrations can be checked in once. Any other status needs a written exception.</p>
+      <a className="btn mt-6 inline-flex" href="/api/admin/exports/registration-desk">Download the club list (Excel)</a>
       <CheckInDesk rows={rows} reference={params.reference ?? ""} notice={params.notice ?? ""} />
     </section>
   )
