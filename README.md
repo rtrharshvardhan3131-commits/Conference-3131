@@ -59,7 +59,7 @@ Primary path: Easebuzz hosted checkout. The amount comes from the server. Confir
 
 Fallback: online transfer to the district account, with a payment screenshot reviewed by finance. The screenshot does not confirm the registration.
 
-Set `EASEBUZZ_KEY`, `EASEBUZZ_SALT`, `EASEBUZZ_ENV=test|prod`, `NEXT_PUBLIC_SITE_URL`, and `CRON_SECRET`. In the Easebuzz dashboard, point the webhook to `/api/payments/easebuzz/webhook`. Return URL is `/api/payments/easebuzz/return`. A Vercel cron hits `/api/cron/easebuzz-reconcile` every 15 minutes for stale attempts.
+Set `EASEBUZZ_KEY`, `EASEBUZZ_SALT`, `EASEBUZZ_ENV=test|prod`, `NEXT_PUBLIC_SITE_URL`, and `CRON_SECRET`. In the Easebuzz dashboard, point the webhook to `/api/payments/easebuzz/webhook`. Return URL is `/api/payments/easebuzz/return`. On the Hobby plan, Vercel cron may run only once per day (`0 3 * * *` UTC); use the admin **Reconcile Easebuzz** button or a Pro plan for more frequent sweeps. Webhook + return still settle most payments.
 
 Do not publish a personal account. Leave the district account lines unpublished until the account name, number, IFSC, and bank are approved. Test Easebuzz settlement is not district money.
 
