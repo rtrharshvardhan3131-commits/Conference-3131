@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Suspense } from "react"
+import { connection } from "next/server"
 import { signOut } from "@/app/actions/auth"
 import { AdminMenu } from "@/components/admin/admin-menu"
 import { AdminNav } from "@/components/admin/nav"
@@ -20,6 +21,7 @@ function Denied() {
 }
 
 async function AdminMenuSlot() {
+  await connection()
   const actor = await requireActor()
   if (!isStaff(actor.roles)) return null
   const role = actor.roles[0]?.replaceAll("_", " ") ?? "staff"
@@ -27,6 +29,7 @@ async function AdminMenuSlot() {
 }
 
 async function AdminDesktopNav() {
+  await connection()
   const actor = await requireActor()
   if (!isStaff(actor.roles)) return null
   const role = actor.roles[0]?.replaceAll("_", " ") ?? "staff"
@@ -51,6 +54,7 @@ async function AdminDesktopNav() {
 }
 
 async function AdminBody({ children }: { children: React.ReactNode }) {
+  await connection()
   const actor = await requireActor()
   if (!isStaff(actor.roles)) return <Denied />
   return children
