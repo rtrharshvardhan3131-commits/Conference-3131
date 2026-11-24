@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "172.*.*.*"],
   cacheComponents: true,
   experimental: {
+    agentUpgrade: "security",
     serverActions: {
       bodySizeLimit: "12mb",
     },

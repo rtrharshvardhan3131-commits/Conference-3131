@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
+import { connection } from "next/server"
 import { assignRoom, correctRegistration } from "@/app/actions/admin"
 import { isDistrictClub, ROTARACT_CLUBS } from "@/domain/clubs"
 import { participantRoleLabel } from "@/domain/participant-role"
@@ -12,7 +15,18 @@ import { requirePermission } from "@/server/session"
 
 export const instant = false
 
-export default async function RegistrationDetail({ params }: { params: Promise<{ id: string }> }) {
+export const metadata: Metadata = { title: "Registration", robots: { index: false, follow: false } }
+
+export default function RegistrationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense>
+      <RegistrationDetail params={params} />
+    </Suspense>
+  )
+}
+
+async function RegistrationDetail({ params }: { params: Promise<{ id: string }> }) {
+  await connection()
   await requirePermission("view_registrations")
   const { id } = await params
   if (!isSupabaseConfigured()) return <OfflineDesk title="Registration" />
